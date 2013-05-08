@@ -1,0 +1,17 @@
+/**
+ * ambient-grey: #f7f7f7
+ * neutral-grey: #f4f4f4
+ * medium-grey: #808080 
+ * dark-grey: #4c4a4a
+ *
+ * light-green: #daf8da
+**/
+
+* { color:#4c4a4a; font-family:Helvetica,sans-serif;}
+body { background:#f7f7f7 url('/assets/alphapup/images/profiler/bg.png') repeat top left;}
+
+h1 { font-size:30px;}
+h2 { font-size:20px; margin-bottom:20px;}
+h3 { font-size:16px; margin-bottom:10px;}
+
+pre { border:1px #f4f4f4 solid; font-family:monospace; padding:10px; margin-bottom:20px; overflow:auto;}

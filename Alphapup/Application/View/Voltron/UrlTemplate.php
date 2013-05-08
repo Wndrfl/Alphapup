@@ -1,0 +1,1 @@
+<?php $this->view('Alphapup','Application/View/Voltron/InputTemplate.php',array(),array('type'=>'url')); ?>
