@@ -18,6 +18,18 @@ $config['services'] = array(
 		),
 	),
 	
+	'carto' => array(
+		'class' => 'Alphapup\Component\Carto\Carto',
+		'shared' => true,
+		'arguments' => array(
+			'dexter' => '@dexter',
+			'introspect' => '@introspect',
+			'entities' => '%entities%',
+			'proxyDir' => '%carto.proxy_dir%',
+			'proxyNamespace' => '%carto.proxy_namespace%',
+		),
+	),
+	
 	'data_collector.config' => array(
 		'class' => 'Alphapup\Component\Debug\DataCollector\ConfigDataCollector',
 		'shared' => true,

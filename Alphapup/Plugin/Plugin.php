@@ -14,6 +14,8 @@ class Plugin implements PluginInterface
 		$container->importConfigFile(__DIR__.'/Core.php');
 		$container->importConfigFile(__DIR__.'/Profiler.php');
 		$container->importConfigFile(__DIR__.'/Routes.php');
+		
+		$this->setupCarto($container);
 	}
 	
 	public function dir()
@@ -24,6 +26,7 @@ class Plugin implements PluginInterface
 	public function postBoot(Container $container)
 	{		
 		$this->setupAssets($container);
+		$this->setupCartoNamespaces($container);
 		$this->setupProfiler($container);
 	}
 
@@ -45,6 +48,33 @@ class Plugin implements PluginInterface
 			}
 		}
 		$router->setRoutes($routes);
+	}
+	
+	public function setupCarto(Container $container)
+	{	
+		if(!$cartoConfig = $container->getConfig('carto')) {
+			$cartoConfig = $container->getConfig()->add('carto');
+		}
+		
+		$proxyNamespace = $cartoConfig->get('proxy_namespace');
+		$proxyDir = $cartoConfig->get('proxy_dir');
+		
+		if(!isset($proxyNamespace) || !$proxyNamespace) {
+			$proxyNamespace = 'Proxy';
+			$cartoConfig->add('proxy_namespace',$proxyNamespace);
+		}
+		if(!isset($proxyDir) || !$proxyDir) {
+			$proxyDir = $container->getConfig('kernel')->cache_dir.'Carto/Proxies';
+			$cartoConfig->add('proxy_dir',$proxyDir);
+		}
+	}
+	
+	public function setupCartoNamespaces(Container $container)
+	{
+		$loader = $container->get('alphapup.class_loader');
+		$loader->registerNamespaces(array(
+			$container->getConfig('carto')->get('proxy_namespace') => $container->getConfig('carto')->get('proxy_dir')
+		));
 	}
 	
 	public function setupProfiler(Container $container)

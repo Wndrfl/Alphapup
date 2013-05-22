@@ -1,6 +1,7 @@
 <?php
 $import = array(
 	__DIR__.'/Assets.php',
+	__DIR__.'/Entities.php',
 	__DIR__.'/Routes.php',
 	__DIR__.'/Services.php',
 	__DIR__.'/Tongues.php'
