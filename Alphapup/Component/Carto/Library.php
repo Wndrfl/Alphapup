@@ -104,7 +104,7 @@ class Library
 	public function calculateAssociationChanges($assoc,$value)
 	{
 		if($value instanceof CollectionProxy && $value->isDirty()) {
-			echo "assoc is dirty";
+			
 			if($assoc['isOwningSide']) {
 				$this->_collectionsToUpdate[] = $value;
 			}
@@ -260,7 +260,7 @@ class Library
 			$this->calculateChangeset($mapping,$entity);
 		}
 		
-		// Computer changes for MANAGED entities
+		// Compute changes for MANAGED entities
 		foreach($this->_map as $className => $oids) {
 			$mapping = $this->_carto->mapping($className);
 			
@@ -270,6 +270,7 @@ class Library
 			
 			foreach($oids as $oid) {
 				$entity = $this->_entities[$oid];
+				
 				// Ignore uninitialized proxies
 				if($entity instanceof Proxy && !$entity->__isInitialized__) {
 					continue;

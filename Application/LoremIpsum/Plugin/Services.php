@@ -1,4 +1,10 @@
 <?php
 $config['services'] = array(
-	// INSERT YOUR SERVICES
+	'account_repository' => array(
+		'class' => 'LoremIpsum\Application\Repository\AccountRepository',
+		'shared' => true,
+		'arguments' => array(
+			'carto' => '@carto',
+		),
+	),
 );

@@ -17,7 +17,7 @@ class ManyToManyProxy extends CollectionProxy
 		
 	public function __construct(Mapping $mapping,
 								ArrayCollection $collection,
-								Librarian $foreignLibrarian,
+								BasicEntityLibrarian $foreignLibrarian,
 								$joinTable,
 								$localJoinId,
 								$localJoinColumn,

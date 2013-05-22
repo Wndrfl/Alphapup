@@ -1,7 +1,6 @@
 <?php
 namespace Alphapup\Component\Carto\Proxy;
 
-use Alphapup\Component\Carto\Carto;
 use Alphapup\Component\Carto\ArrayCollection;
 use Alphapup\Component\Carto\Mapping;
 
@@ -9,7 +8,6 @@ abstract class CollectionProxy extends ArrayCollection
 {
 	private
 		$_association,
-		$_carto,
 		$_collection,
 		$_isDirty = false,
 		$_isInitialized = false,
@@ -17,9 +15,8 @@ abstract class CollectionProxy extends ArrayCollection
 		$_owner,
 		$_snapshot = array();
 		
-	public function __construct(Carto $carto,Mapping $mapping,ArrayCollection $collection)
+	public function __construct(Mapping $mapping,ArrayCollection $collection)
 	{
-		$this->_carto = $carto;
 		$this->_mapping = $mapping;
 		$this->_collection = $collection;
 	}
@@ -69,7 +66,7 @@ abstract class CollectionProxy extends ArrayCollection
 	
 	public function isDirty()
 	{
-		return $this->isDirty();
+		return $this->_isDirty;
 	}
 	
 	public function isEmpty()

@@ -1,4 +1,7 @@
 <?php
 $config['entities'] = array(
-	'Account' => 'DiggersList\Application\Entity\Account',
+	'Account' => 'LoremIpsum\Application\Entity\Account',
+	'AccountUser' => 'LoremIpsum\Application\Entity\AccountUser',
+	'Comment' => 'LoremIpsum\Application\Entity\Comment',
+	'Group' => 'LoremIpsum\Application\Entity\Group',
 );

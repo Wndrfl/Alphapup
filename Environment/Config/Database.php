@@ -6,7 +6,7 @@ $config['database'] = array(
 			'host' => 'localhost',
 			'username' => 'root',
 			'password' => 'root',
-			'database' => 'greenhotelsonly'
+			'database' => 'alphapup'
 		)
 	)
 );

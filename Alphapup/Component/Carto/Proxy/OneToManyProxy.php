@@ -12,7 +12,7 @@ class OneToManyProxy extends CollectionProxy
 		$_ids,
 		$_librarian;
 		
-	public function __construct(Mapping $mapping,ArrayCollection $collection,Librarian $librarian,array $ids=array())
+	public function __construct(Mapping $mapping,ArrayCollection $collection,BasicEntityLibrarian $librarian,array $ids=array())
 	{
 		parent::__construct($mapping,$collection);
 		$this->_librarian = $librarian;

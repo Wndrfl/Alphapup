@@ -5,4 +5,10 @@ $config['routes'] = array(
 		'controller' => 'LoremIpsum\\Application\\Controller\\Index',
 		'action' => 'index'
 	),
+	
+	'loremipsum.carto' => array(
+		'pattern' => 'carto',
+		'controller' => 'LoremIpsum\\Application\\Controller\\Index',
+		'action' => 'carto'
+	),
 );

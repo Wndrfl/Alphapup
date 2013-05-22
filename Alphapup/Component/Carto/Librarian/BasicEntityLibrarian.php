@@ -1,6 +1,7 @@
 <?php
 namespace Alphapup\Component\Carto\Librarian;
 
+use Alphapup\Component\Carto\ArrayCollection;
 use Alphapup\Component\Carto\Carto;
 use Alphapup\Component\Carto\Hydrator;
 use Alphapup\Component\Carto\Mapping;
@@ -443,6 +444,7 @@ class BasicEntityLibrarian
 				
 					// if owner, it can be lazy
 					if($association['isOwningSide']) {
+						
 						$joinColumnValue = (isset($data[$association['local']])) ? $data[$association['local']] : null;
 				
 						$assocMapping = $this->_carto->mapping($association['entity']);
@@ -481,10 +483,10 @@ class BasicEntityLibrarian
 						$this->_mapping->entityValue($entity,$this->_mapping->propertyName($targetAssoc['foreign']))
 					);
 				
-					$collectionProxy = new CollectionProxy(
-						$this->_carto,
+					$collectionProxy = new OneToManyProxy(
 						$this->_mapping,
-						new ArrayCollection()
+						new ArrayCollection(),
+						$this
 					);
 					
 					$collectionProxy->setOwner($entity,$association);
@@ -497,6 +499,7 @@ class BasicEntityLibrarian
 					$this->_mapping->setEntityValue($entity,$association['propertyName'],$collectionProxy);
 				
 				}elseif($association['type'] == Mapping::MANY_TO_MANY) {
+					
 					$targetMapping = $this->_carto->mapping($association['entity']);
 					$targetLibrarian = $this->_carto->library()->librarian($association['entity']);
 				
@@ -524,10 +527,14 @@ class BasicEntityLibrarian
 						return false;
 					}
 
-					$collectionProxy = new CollectionProxy(						
-						$this->_carto,
+					$collectionProxy = new ManyToManyProxy(	
 						$this->_mapping,
-						new ArrayCollection()
+						new ArrayCollection(),
+						$this,
+						$ownerAssoc['joinTable'],
+						$localIdValue,
+						$ownerAssoc['joinColumns']['foreign'],
+						$ownerAssoc['joinColumns']['local']
 					);
 
 					$collectionProxy->setOwner($entity,$association);

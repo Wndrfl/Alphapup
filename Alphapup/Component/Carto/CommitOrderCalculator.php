@@ -90,9 +90,9 @@ class CommitOrderCalculator
 		
 		
 		foreach($sorted as $class) {
-			echo "<br />".$class->entityName();
+			//echo "<br />1".$class->entityName();
 		}
-		echo '<br />';
+		//echo '<br />';
 		
 		$this->_sorted = $this->_nodeStates = array();
 		
