@@ -1,4 +1,3 @@
-
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -12,5 +11,10 @@ Icon
 .Spotlight-V100
 .Trashes
 
-Environment/Cache
+Environment/*
+Environment/Alphapup.php
+Environment/Bootstrap.php
 Environment/Cache/Dev/profiler
+Environment/Config/Database.php
+Environment/Config/Database.php
+Environment/Config/Paths.php

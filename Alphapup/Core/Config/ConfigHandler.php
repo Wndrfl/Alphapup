@@ -126,6 +126,8 @@ class ConfigHandler
 					foreach($parts as $p) {
 						if(isset($c[$p])) {
 							$c = $c[$p];
+						}else{
+							return array(); // doesn't exist in config...return blank
 						}
 					}
 					if(is_array($c)) {
@@ -151,11 +153,13 @@ class ConfigHandler
 		$part = preg_replace_callback('|%([A-Za-z0-9._-]+)%|',function($matches) use ($handler,$config) {
 			$parts = explode('.',$matches[1]);
 			$c = $config;
+
 			foreach($parts as $part) {
 				if(isset($c[$part])) {
 					$c = $c[$part];
 				}
 			}
+			
 			return (!is_array($c)) ? $handler->replaceVariables($config,$c) : 'Array';
 			
 		},$part);
