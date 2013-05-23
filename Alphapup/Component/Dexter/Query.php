@@ -6,6 +6,7 @@ use Alphapup\Component\Dexter\Dexter;
 class Query
 {
 	private
+		$_dexter,
 		$_error,
 		$_params=array(),
 		$_results=array(),
@@ -20,6 +21,25 @@ class Query
 		$this->_dexter = $dexter;
 		$this->_sql = $sql;
 		$this->_params = $params;
+	}
+	
+	public function __sleep()
+	{
+		return array(
+			'_error',
+			'_params',
+			'_results',
+			'_rowCount',
+			'_sql',
+			'_startTime',
+			'_stopTime',
+			'_success'
+		);
+	}
+	
+	public function error()
+	{
+		return $this->_error;
 	}
 	
 	public function errorMessage()

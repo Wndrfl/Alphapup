@@ -88,13 +88,10 @@ class Finder
 	
 	public function put(FinderFile $file)
 	{
-		if($f = @fopen($file->path(),'w')) {
-			fwrite($f,$file->contents());
-			$this->_files[$file->path()] = $file;
-			fclose($f);
-			return true;
-		}
-		return false;
+		$f = new \SplFileObject($file->path(),'w');
+		$f->fwrite($file->contents());
+		$this->_files[$file->path()] = $file;
+		return true;
 	}
 	
 	public function symlink($target,$link)

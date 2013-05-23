@@ -32,6 +32,7 @@ class BasicEntityLibrarian
 	
 	private function _addToLibrary($entity)
 	{
+		//echo "ADDING ".get_class($entity)."<br />";
 		$this->_carto->library()->addManaged($entity);
 	}
 	
@@ -344,7 +345,9 @@ class BasicEntityLibrarian
 		// Gather raw results
 		$sql = $qb->sql();
 		//echo $sql."<br />";
-		$rows = $this->_carto->dexter()->execute($sql,$params)->results();
+		
+		$ttl = (isset($options['ttl'])) ? intval($options['ttl']) : 0;
+		$rows = $this->_carto->dexter()->execute($sql,$params,$ttl)->results();
 		
 		// If no rows, nix
 		if(!isset($rows[0])) {
@@ -413,7 +416,10 @@ class BasicEntityLibrarian
 		// Gather raw results
 		$sql = $qb->sql();
 		//echo $sql."<br />";
-		$rows = $this->_carto->dexter()->execute($sql,$params)->results();
+		
+		$ttl = (isset($options['ttl'])) ? intval($options['ttl']) : 0;
+		
+		$rows = $this->_carto->dexter()->execute($sql,$params,$ttl)->results();
 		
 		// If no rows, nix
 		if(!isset($rows[0])) {
@@ -477,18 +483,16 @@ class BasicEntityLibrarian
 		// Try to find an exists copy of this entity
 		// to keep from recreating it
 		if($entity = $library->tryGetById($identifier,$className)) {
-			
+			die('hi');
 			$oid = $library->createId($entity);
 			
 			// If the found entity is an UNINITIALIZED PROXY
 			if($entity instanceof Proxy && !$entity->__isInitialized__) {
-				$entity->__isInitialized = true;
+				$entity->__isInitialized__ = true;
 				$overrideLocal = true;
 				
 			// If it's a 'normal' entity
 			}else{
-				
-				
 				$overrideLocal = (isset($options['useEntity']));
 				
 				// if a specific entity is given to simply refresh,
@@ -670,7 +674,9 @@ class BasicEntityLibrarian
 		
 		if($association['isOwningSide']) {
 			
-			if($targetEntity = $this->_carto->library()->librarian($targetMapping->className())->fetchOne($identifier)) {
+			if($targetEntity = $this->_carto->library()->librarian($targetMapping->className())->fetchOne($identifier,array(
+				'ttl' => $association['ttl']
+			))) {
 				$targetMapping->setEntityValue($targetEntity,$association['inversedBy'],$entity);
 			}
 			
@@ -681,7 +687,9 @@ class BasicEntityLibrarian
 			$identifier[$targetAssoc['propertyName']] = 
 				$this->_mapping->entityValue($entity,$this->_mapping->propertyName($targetAssoc['foreign']));
 																		
-			if($targetEntity = $this->_carto->library()->librarian($targetMapping->className())->fetchOne($identifier)) {
+			if($targetEntity = $this->_carto->library()->librarian($targetMapping->className())->fetchOne($identifier,array(
+				'ttl' => $association['ttl']
+			))) {
 				$targetMapping->setEntityValue($targetEntity,$association['mappedBy'],$entity);
 			}
 		}
@@ -700,7 +708,10 @@ class BasicEntityLibrarian
 			$this->_mapping->entityValue($ownerEntity,$this->_mapping->propertyName($targetAssoc['foreign']))
 		);
 		
-		$entities = $targetLibrarian->fetchBy($identifier);
+
+		$entities = $targetLibrarian->fetchBy($identifier,null,null,null,array(
+			'ttl' => $assoc['ttl']
+		));
 		if($entities) {
 			foreach($entities as $entity) {
 				$collection->setValue(null,$entity);

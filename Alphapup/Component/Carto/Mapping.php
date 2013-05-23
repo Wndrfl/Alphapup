@@ -57,6 +57,7 @@ class Mapping
 		}
 		
 		$mapping['lazy'] = (isset($annot['lazy'])) ? (bool)$annot['lazy'] : false;
+		$mapping['ttl'] = (isset($annot['ttl'])) ? intval($annot['ttl']) : 0;
 		
 		return $mapping;
 	}
