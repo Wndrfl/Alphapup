@@ -2,6 +2,7 @@
 	<select
 		<?php $this->view('Alphapup','Application/View/Voltron/AttributesTemplate.php',array(),array(
 			'attr' => (isset($attr)) ? $attr : false,
+			'class' => (isset($class)) ? $class : false,
 			'disabled' => (isset($disabled)) ? $disabled : false,
 			'id' => (isset($id)) ? $id : false,
 			'name' => (isset($name)) ? $name : false,
