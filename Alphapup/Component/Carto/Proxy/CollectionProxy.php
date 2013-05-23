@@ -2,11 +2,10 @@
 namespace Alphapup\Component\Carto\Proxy;
 
 use Alphapup\Component\Carto\ArrayCollection;
-use Alphapup\Component\Carto\Mapping;
 
 abstract class CollectionProxy extends ArrayCollection
-{
-	private
+{		
+	protected
 		$_association,
 		$_collection,
 		$_isDirty = false,
@@ -14,103 +13,126 @@ abstract class CollectionProxy extends ArrayCollection
 		$_mapping,
 		$_owner,
 		$_snapshot = array();
-		
-	public function __construct(Mapping $mapping,ArrayCollection $collection)
-	{
-		$this->_mapping = $mapping;
-		$this->_collection = $collection;
-	}
-		
-	public function add($element)
-	{
-		$this->_collection->setValue(null,$element);
-		$this->changed();
-	}
-		
-	public function changed()
-	{
-		$this->_isDirty = true;
-	}
 	
-	public function collection()
+	public function association()
 	{
-		return $this->_collection;
+		return $this->_association();
 	}
-	
-	public function initialize()
-	{
-		if(!$this->_isInitialized && $this->_association) {
-			if($this->_isDirty) {
-				// Has NEW objects added through add().
-				$newObjects = $this->_collection->values();
-			}
-			$this->_collection->clear();
-			$this->_carto->library()->loadCollection($this);
-			$this->takeSnapshot();
 			
-			// Reattach NEW objects
-			if(isset($newObjects)) {
-				foreach($newObjects as $obj) {
-					$this->add($object);
-				}
-			}
-			$this->_isInitialized = true;
-		}
+	public function clear()
+	{
+		$this->__load();
+		return parent::clear();
 	}
-	
+
+    public function current()
+	{
+		$this->__load();
+		return parent::current();
+    }
+
 	public function insertDiff()
     {
-        return array_udiff_assoc($this->_collection->values(), $this->_snapshot,
+        return array_udiff_assoc($this->values(), $this->_snapshot,
                 function($a, $b) {return $a === $b ? 0 : 1;});
     }
-	
+
 	public function isDirty()
 	{
 		return $this->_isDirty;
 	}
-	
+
 	public function isEmpty()
 	{
-		$this->initialize();
-        return $this->_collection->isEmpty();
+		$this->__load();
+		return parent::isEmpty();
 	}
-	
-	public function mapping()
+
+    public function key()
 	{
-		return $this->_mapping;
+		$this->__load();
+		return parent::key();
+    }
+
+	public function offsetExists($offset)
+	{
+		$this->__load();
+		return parent::offsetExists($offset);
 	}
-	
+
+	public function offsetGet($offset)
+	{
+		$this->__load();
+		return parent::offsetGet($offset);
+	}
+
+	public function offsetSet($offset,$value)
+	{
+		$this->__load();
+		return parent::offsetSet($offset,$value);
+	}
+
+	public function offsetUnset($offset)
+	{
+		$this->__load();
+		return parent::offsetUnset($offset);
+	}
+
+    public function next()
+	{
+        $this->__load();
+		return parent::next();
+    }
+
 	public function owner()
 	{
 		return $this->_owner;
 	}
-	
-	public function remove($key)
+
+	public function rewind()
 	{
-		if(isset($this->_collection[$key])) {
-			$entity = $this->_collection[$key];
-			unset($this->_collection[$key]);
-			$this->changed();
-		}
-		
-		// TODO: remove managed element
-		// see also : scheduleOrphanRemoval
-	}
-	
+        $this->__load();
+		return parent::rewind();
+    }
+
 	public function setDirty($bool=true)
 	{
 		$this->_isDirty = (bool)$bool;
 	}
-	
+
 	public function setOwner($entity,array $assoc)
 	{
 		$this->_owner = $entity;
 		$this->_association = $assoc;
 	}
+
+	public function setValue($key=null,$value)
+	{
+		$this->__load();
+		return parent::setValue($key,$value);
+	}
+
+	public function setValues(array $values=array())
+	{
+		$this->__load();
+		return parent::setValues($values);
+	}
 	
 	public function takeSnapshot()
     {
-        $this->_snapshot = $this->_collection->values();
+        $this->_snapshot = $this->values();
         $this->_isDirty = false;
     }
+
+    public function valid()
+	{
+		$this->__load();
+		return parent::valid();
+    }
+
+	public function values()
+	{
+		$this->__load();
+		return parent::values();
+	}
 }

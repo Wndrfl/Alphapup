@@ -504,6 +504,10 @@ class Library
 		}
 	}
 	
+	/**
+	 * 	Create a unique id for this entity
+	 *  based on an actual hash of the object
+	 **/
 	public function createId($entity)
 	{
 		return spl_object_hash($entity);

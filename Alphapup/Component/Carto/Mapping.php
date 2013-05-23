@@ -88,7 +88,7 @@ class Mapping
 	{
 		$mapping = $this->_validateAndCompleteAssociationMapping($annot,$mapping);
 		
-		// OneToMany MUST not be owner
+		// OneToMany MUST NOT be owner
 		if(!isset($annot['mappedBy'])) {
 			// DO EXCEPTION
 			return;

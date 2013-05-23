@@ -3,7 +3,7 @@ namespace Alphapup\Component\Carto;
 
 class ArrayCollection implements \Iterator, \ArrayAccess
 {
-	private
+	public
 		$_values = array(),
 		$_pointer = 0;
 	
@@ -12,7 +12,7 @@ class ArrayCollection implements \Iterator, \ArrayAccess
 		if(is_array($values)) {
 			$this->setValues($values);
 		}else{
-			$this->setValue($values);
+			$this->setValue(null,$values);
 		}
 	}
 	

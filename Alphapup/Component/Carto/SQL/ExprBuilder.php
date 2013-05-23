@@ -29,6 +29,13 @@ class ExprBuilder
 		return new Expr\Column($table,$name);
 	}
 	
+	public function count($tableName=null,$name,$alias=null)
+	{	
+		$table = (!is_null($tableName)) ? $this->table($tableName) : null;
+		
+		return new Expr\Count($table,$name,$alias);
+	}
+	
 	public function isEqualTo($leftExpr,$rightExpr)
 	{
 		return new Expr\Comparison($leftExpr,Expr\Comparison::O_EQUALS,$rightExpr);

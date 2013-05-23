@@ -12,22 +12,38 @@ class OneToManyProxy extends CollectionProxy
 		$_ids,
 		$_librarian;
 		
-	public function __construct(Mapping $mapping,ArrayCollection $collection,BasicEntityLibrarian $librarian,array $ids=array())
+	public $__isInitialized__ = false;
+		
+	public function __construct(Mapping $mapping,BasicEntityLibrarian $librarian,array $ids=array())
 	{
-		parent::__construct($mapping,$collection);
+		parent::__construct($mapping);
+		$this->_mapping = $mapping;
 		$this->_librarian = $librarian;
 		$this->_ids = $ids;
 	}
 	
 	public function __load()
-	{
-		if(!$this->__isInitialized__ && $this->_librarian) {
+	{	
+		if(!$this->__isInitialized__ && $this->_association) {
 			$this->__isInitialized__ = true;
-			
-			$this->setValues($this->_librarian->fetchBy($this->_ids));
-			unset($this->_library,$this->_ids);
-			
+			if($this->_isDirty) {
+				// Has NEW objects added through add().
+				$newObjects = $this->values();
+			}
+			$this->clear();
+			$this->_librarian->loadOneToManyCollection(
+				$this->_association,
+				$this->owner(),
+				$this
+			);
 			$this->takeSnapshot();
+			
+			// Reattach NEW objects
+			if(isset($newObjects)) {
+				foreach($newObjects as $obj) {
+					$this->add($object);
+				}
+			}
 		}
 	}
 }

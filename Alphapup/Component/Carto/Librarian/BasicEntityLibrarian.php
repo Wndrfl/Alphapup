@@ -5,6 +5,7 @@ use Alphapup\Component\Carto\ArrayCollection;
 use Alphapup\Component\Carto\Carto;
 use Alphapup\Component\Carto\Hydrator;
 use Alphapup\Component\Carto\Mapping;
+use Alphapup\Component\Carto\Proxy\CollectionProxy;
 use Alphapup\Component\Carto\Proxy\OneToManyProxy;
 use Alphapup\Component\Carto\Proxy\ManyToManyProxy;
 use Alphapup\Component\Carto\Proxy\Proxy;
@@ -219,6 +220,9 @@ class BasicEntityLibrarian
 		return $rows;
 	}
 	
+	/**
+	 * 	Fetches a single entity from the data source by the id
+	 **/
 	public function fetch($id)
 	{
 		$qb = new SQLBuilder();
@@ -240,7 +244,6 @@ class BasicEntityLibrarian
 				$columns[] = $qb->expr()->column($this->_mapping->tableName(),$assoc['local']);
 				$rm->mapMeta($this->_mapping->entityName(),$assoc['local']);
 			}
-			
 		}
 		
 		$qb->select($columns);
@@ -270,6 +273,9 @@ class BasicEntityLibrarian
 		return $results[0];
 	}
 	
+	/**
+	 * 	Fetch entities from data source by variable criteria
+	 **/
 	public function fetchBy(array $criteria=array(),$orderBy=null,$limit=null,$offset=null,array $options=array())
 	{
 		$qb = new SQLBuilder();
@@ -297,16 +303,21 @@ class BasicEntityLibrarian
 		$qb->select($columns);
 		
 		$qb->from($this->_mapping->tableName());
-				
+		
+		// Loop thru criteria to build queries conditions
 		$conditions = array();
 		$params = array();
 		foreach($criteria as $propertyName => $value) {
+			
+			// If there is a column that corresponds to the supplied propertyName
 			if($columnName = $this->_mapping->columnName($propertyName)) {
 				$conditions[] = $qb->expr()->isEqualTo(
 					$qb->expr()->column($this->_mapping->tableName(),$this->_mapping->columnName($propertyName)),
 					'?'
 				);
 				$params[] = $value;
+				
+			// If the property has an association to another entity
 			}elseif($assoc = $this->_mapping->propertyAssociation($propertyName)) {
 				$conditions[] = $qb->expr()->isEqualTo(
 					$qb->expr()->column($this->_mapping->tableName(),$assoc['local']),
@@ -317,24 +328,30 @@ class BasicEntityLibrarian
 		}
 		$qb->where($conditions);
 		
+		// Check for order by statements
 		if(is_array($orderBy)) {
-			foreach($orderBy as $col => $dir) {
+			foreach($orderBy as $propertyName => $dir) {
+				$col = $this->_mapping->columnName($propertyName);
 				$qb->orderBy($col,$dir);
 			}
 		}
 		
+		// Check for limit statements
 		if(!is_null($limit) || !is_null($offset)) {
 			$qb->limit($limit,$offset);
 		}
 		
+		// Gather raw results
 		$sql = $qb->sql();
-		
+		//echo $sql."<br />";
 		$rows = $this->_carto->dexter()->execute($sql,$params)->results();
 		
+		// If no rows, nix
 		if(!isset($rows[0])) {
 			return false;
 		}
 		
+		// Hydrate entities w/ the results
 		$results = $this->_hydrator->hydrateAll($rows,$rm,$options);
 		
 		return $results;
@@ -348,6 +365,64 @@ class BasicEntityLibrarian
 		return $results;
 	}
 	
+	public function fetchCount(array $criteria=array(),$limit=null,$offset=null,array $options=array())
+	{
+		$qb = new SQLBuilder();
+		
+		$rm = new ResultMapping();
+		$rm->mapEntity($this->_mapping->entityName(),$this->_mapping->entityName());
+		
+		$columns = array(
+			$qb->expr()->count(null,'*','count')
+		);
+		
+		$qb->select($columns);
+		
+		$qb->from($this->_mapping->tableName());
+		
+		// Loop thru criteria to build queries conditions
+		$conditions = array();
+		$params = array();
+		foreach($criteria as $propertyName => $value) {
+			
+			// If there is a column that corresponds to the supplied propertyName
+			if($columnName = $this->_mapping->columnName($propertyName)) {
+			
+				$conditions[] = $qb->expr()->isEqualTo(
+					$qb->expr()->column($this->_mapping->tableName(),$this->_mapping->columnName($propertyName)),
+					'?'
+				);
+				$params[] = $value;
+				
+			// If the property has an association to another entity
+			}elseif($assoc = $this->_mapping->propertyAssociation($propertyName)) {
+				$conditions[] = $qb->expr()->isEqualTo(
+					$qb->expr()->column($this->_mapping->tableName(),$assoc['local']),
+					'?'
+				);
+				$params[] = $value;
+			}
+		}
+		$qb->where($conditions);
+		
+		// Check for limit statements
+		if(!is_null($limit) || !is_null($offset)) {
+			$qb->limit($limit,$offset);
+		}
+		
+		// Gather raw results
+		$sql = $qb->sql();
+		//echo $sql."<br />";
+		$rows = $this->_carto->dexter()->execute($sql,$params)->results();
+		
+		// If no rows, nix
+		if(!isset($rows[0])) {
+			return 0;
+		}
+		
+		return $rows[0]['count'];
+	}
+	
 	public function fetchOne(array $criteria=array(),array $options=array())
 	{
 		$results = $this->fetchBy($criteria,null,1,null,$options);
@@ -359,12 +434,25 @@ class BasicEntityLibrarian
 		return false;
 	}
 	
+	/**
+	 * 	Is given a set of data
+	 * 
+	 *  Options:
+	 *  	- 'useEntity': pass an actual entity to this method 
+	 * 			to fill this entity w/ values, instead of 
+	 * 			creating a new one
+	 * 		- 'eager': an array of properties w/ associations
+	 * 			that we want to make sure are NOT LAZY
+	 * 		- 'lazy': an array of properties w/ associations
+	 * 			that we want to make sure ARE LAZY
+	 **/
 	public function getOrCreateEntity(array $data=array(),array $options=array())
 	{
 		$className = $this->_mapping->className();
 		
 		$ids = $this->_mapping->ids();
 		
+		// set up the identifier(s) for this entity
 		if($this->_mapping->idIsCompound()) {
 			$identifier = array();
 			foreach($ids as $id) {
@@ -375,22 +463,32 @@ class BasicEntityLibrarian
 				}
 			}
 		}else{
-			if($assoc = $this->_mapping->propertyAssociation($ids[0])) {
-				$identifier[$ids[0]] = $data[$assoc['local']];
-			}else{
-				$identifier[$ids[0]] = $data[$ids[0]];
+			if(isset($ids[0])) {
+				if($assoc = $this->_mapping->propertyAssociation($ids[0])) {
+					$identifier[$ids[0]] = $data[$assoc['local']];
+				}else{
+					$identifier[$ids[0]] = $data[$ids[0]];
+				}
 			}
 		}
 		
 		$library = $this->_carto->library();
 		
-		// try to find an existing copy first
+		// Try to find an exists copy of this entity
+		// to keep from recreating it
 		if($entity = $library->tryGetById($identifier,$className)) {
+			
 			$oid = $library->createId($entity);
+			
+			// If the found entity is an UNINITIALIZED PROXY
 			if($entity instanceof Proxy && !$entity->__isInitialized__) {
 				$entity->__isInitialized = true;
 				$overrideLocal = true;
+				
+			// If it's a 'normal' entity
 			}else{
+				
+				
 				$overrideLocal = (isset($options['useEntity']));
 				
 				// if a specific entity is given to simply refresh,
@@ -399,11 +497,15 @@ class BasicEntityLibrarian
 					$overrideLocal = false;
 				}
 			}
+			
+		// We couldn't find an entity, so we must create a new one
 		}else{
 		
-			// create a fresh entity
+			// Check to see if we passed an entity
 			if(isset($options['useEntity'])) {
 				$entity = $options['useEntity'];
+				
+			// Create a fresh entity
 			}else{
 				$entity = new $className;
 			}
@@ -413,6 +515,7 @@ class BasicEntityLibrarian
 		
 		// override local values if need be
 		if($overrideLocal) {
+			
 			// set values according to mapping annotations
 			foreach($this->_mapping->propertyNames() as $propertyName) {
 				if(isset($data[$propertyName])) {
@@ -420,9 +523,10 @@ class BasicEntityLibrarian
 				}
 			}
 		
-			// set proxies for associations
+			// set proxies for entity properties w/ associations
 			foreach($this->_mapping->associations() as $association) {
 			
+				// override lazies - make them eager
 				if(isset($options['eager'])) {
 					if(is_array($options['eager']) && in_array($association['property'],$options['eager'])) {
 						$association['lazy'] = false;
@@ -431,6 +535,7 @@ class BasicEntityLibrarian
 					}
 				}
 
+				// override non-lazies - make them lazy
 				if(isset($options['lazy'])) {
 					if(is_array($options['lazy']) && in_array($association['property'],$options['lazy'])) {
 						$association['lazy'] = true;
@@ -439,7 +544,11 @@ class BasicEntityLibrarian
 					}
 				}
 			
-				// Figure out TO_ONE relations
+				/**
+				 * 	Handle any TO_ONE relationships:
+				 *  - ONE_TO_ONE
+				 *  - MANY_TO_ONE
+				 **/
 				if($association['type'] & Mapping::TO_ONE) {
 				
 					// if owner, it can be lazy
@@ -447,6 +556,7 @@ class BasicEntityLibrarian
 						
 						$joinColumnValue = (isset($data[$association['local']])) ? $data[$association['local']] : null;
 				
+						// get mapping for the OTHER ENTITY
 						$assocMapping = $this->_carto->mapping($association['entity']);
 
 						$associatedId = array();
@@ -474,19 +584,20 @@ class BasicEntityLibrarian
 				
 				}elseif($association['type'] == Mapping::ONE_TO_MANY) {
 				
+					// Get the mapping of the MANY entity
 					$targetMapping = $this->_carto->mapping($association['entity']);
 					$targetLibrarian = $this->_carto->library()->librarian($association['entity']);
 					$targetAssoc = $targetMapping->propertyAssociation($association['mappedBy']);
 				
 					$identifier = array(
-						$targetAssoc['propertyName'] => 
+						$targetAssoc['local'] => 
 						$this->_mapping->entityValue($entity,$this->_mapping->propertyName($targetAssoc['foreign']))
 					);
 				
 					$collectionProxy = new OneToManyProxy(
 						$this->_mapping,
-						new ArrayCollection(),
-						$this
+						$this,
+						$identifier
 					);
 					
 					$collectionProxy->setOwner($entity,$association);
@@ -497,7 +608,7 @@ class BasicEntityLibrarian
 					}
 
 					$this->_mapping->setEntityValue($entity,$association['propertyName'],$collectionProxy);
-				
+					
 				}elseif($association['type'] == Mapping::MANY_TO_MANY) {
 					
 					$targetMapping = $this->_carto->mapping($association['entity']);
@@ -567,10 +678,8 @@ class BasicEntityLibrarian
 			
 			$targetAssoc = $targetMapping->propertyAssociation($association['mappedBy']);
 			
-			$identifier[$targetAssoc['propertyName']] = $this->_mapping->entityValue(
-																		$entity,
-																		$this->_mapping->propertyName($targetAssoc['foreign'])
-																		);
+			$identifier[$targetAssoc['propertyName']] = 
+				$this->_mapping->entityValue($entity,$this->_mapping->propertyName($targetAssoc['foreign']));
 																		
 			if($targetEntity = $this->_carto->library()->librarian($targetMapping->className())->fetchOne($identifier)) {
 				$targetMapping->setEntityValue($targetEntity,$association['mappedBy'],$entity);
@@ -585,15 +694,17 @@ class BasicEntityLibrarian
 		$targetMapping = $this->_carto->mapping($assoc['entity']);
 		$targetLibrarian = $this->_carto->library()->librarian($assoc['entity']);
 		$targetAssoc = $targetMapping->propertyAssociation($assoc['mappedBy']);
-	
+		
 		$identifier = array(
 			$targetAssoc['propertyName'] => 
 			$this->_mapping->entityValue($ownerEntity,$this->_mapping->propertyName($targetAssoc['foreign']))
 		);
 		
-		$entities = $this->_librarian->fetchBy($identifier);
-		foreach($entities as $entity) {
-			$collection->add($entity);
+		$entities = $targetLibrarian->fetchBy($identifier);
+		if($entities) {
+			foreach($entities as $entity) {
+				$collection->setValue(null,$entity);
+			}
 		}
 		
 		return $collection;

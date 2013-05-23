@@ -29,8 +29,8 @@ class SQLBuilder
 	private function _generateQueryPart($partType,$pre='',$separator='',$empty='')
 	{
 		$queryPart = $this->part($partType);
-        
-        if(empty($queryPart)) {
+		
+        if(!$queryPart) {
             return (!is_null($empty) ? $empty : '');
         }
         
@@ -55,6 +55,7 @@ class SQLBuilder
 		$sql .= $this->_generateQueryPart('select',' ',', ','');
 		
 		$fromParts = $this->part('from');
+		
 		$joinParts = $this->part('join');
 		
         $fromClauses = array();
@@ -114,6 +115,7 @@ class SQLBuilder
 		if($table instanceof self) {
 			$table = '('.$table->sql().')';
 		}
+		
 		return $this->add('from',new Expr\From($table,$alias),false);
 	}
 	

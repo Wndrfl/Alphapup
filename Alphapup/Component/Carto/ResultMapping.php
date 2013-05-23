@@ -1,6 +1,10 @@
 <?php
 namespace Alphapup\Component\Carto;
 
+/**
+ * 	Saves/Maps information on how a query's select columns are mapped to the 
+ *  various entities that it is querying for.
+ **/
 class ResultMapping
 {
 	public

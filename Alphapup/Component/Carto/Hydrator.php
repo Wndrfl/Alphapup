@@ -4,6 +4,14 @@ namespace Alphapup\Component\Carto;
 use Alphapup\Component\Carto\ArrayCollection;
 use Alphapup\Component\Carto\Carto;
 
+/**
+ * 	Takes a result set and info on how to map that result set
+ *  to useable entities and then:
+ * 
+ *  1. Organizes result set into an entity-based structure (for internal use only)
+ *  2. Creates all parent and child entities
+ *  3. Inserts children into parents
+ **/
 class Hydrator
 {
 	private
@@ -27,6 +35,9 @@ class Hydrator
 		$this->_carto = $carto;
 	}
 	
+	/**
+	 * 	Get or create entity from librarian
+	 **/
 	private function _getEntity(array $data,$entityAlias)
 	{
 		$librarian = $this->_librarians[$entityAlias];
@@ -47,7 +58,10 @@ class Hydrator
 		// DO EXCEPTION
 		return false;
 	}
-	
+
+	/**
+	 * 	The equivalent of a reset
+	 **/
 	public function _prepare()
 	{
 		$this->_childrenMap = 
@@ -81,6 +95,7 @@ class Hydrator
 		$rowData = array();
 		
 		foreach($data as $key => $value) {
+
 			$alias = $this->_resultMapping->columnOwner($key);
 			
 			if(!isset($rowData[$alias])) {
@@ -102,9 +117,39 @@ class Hydrator
 		return $rowData;
 	}
 
+	/**
+	 * 	Take a data array and fill entities w/ it
+	 **/
+	public function hydrateAll($data,$resultMapping,array $options=array())
+	{	
+		$this->_resultMapping = $resultMapping;
+		
+		// Reset the hydrator
+		$this->_prepare();
+		
+		$this->_options = $options;
+		
+		// Loop thru rows
+		foreach($data as $row) {
+			$this->hydrateRow($row);
+		}
+		
+		$results = array();
+		$this->organizeEntities($results);
+		
+		return $results;
+	}
+	
+	/**
+	 * 	Each row of data contains info on 1 or more entities
+	 *  This method turns the data into real entities, and maps
+	 *  child entities to parents.
+	 **/
 	public function hydrateRow(array $data=array())
 	{
 		$rowData = $this->getRowData($data,$this->_resultMapping);
+		
+		// Temp caching of parent entities
 		$parents = array();
 		
 		foreach($rowData as $entityAlias => $data) {
@@ -119,63 +164,63 @@ class Hydrator
 				foreach($ids as $id) {
 					$entityIds[] = $data[$id];
 				}
-				$entityId = implode('',$entityIds);
+				$entityId = implode('',$entityIds); // create a singular id
 			}else{
-				$entityId = $data[$ids[0]];
+				if(isset($ids[0])) {
+					$entityId = $data[$ids[0]];
+				}else{
+					$entityId = md5(implode('',$data));
+				}
 			}
 			
-			// JOINED ENTITIES
+			// If the entity has a parent (if NOT ROOT entity)
 			if($parentAlias = $this->_resultMapping->parentForAlias($entityAlias)) {
+				
+				// gets/creates entity from librarian
+				// also fills entity w/ data
 				$entity = $this->_getEntity($data,$entityName);
+				
+				// Cache entity locally by id
 				$this->_entityMap[$entityAlias][$entityId] = $entity;
 				
 				// TODO: consolidate to figuring this out only once
+				// Get info on the parent
 				$parentEntityName = $this->_resultMapping->entityForAlias($parentAlias);
 				$parentMapping = $this->_mapping[$parentEntityName];
 				$parentAssociationInfo = $parentMapping->associationFor($entityMapping->entityName());
 
+				// Grab parent entity from temp cache (above)
 				$parentEntity = $this->_entityMap[$parentAlias][$parents[$parentAlias]];
 				$parentLocalId = $parentMapping->entityValue($parentEntity,$parentAssociationInfo['local']);
 			
-				// map as child by
-				// parentAlias -> parent's local value -> entity alias -> entity's id
+				// Map as child by
+				// parentAlias -> parent's local id value -> entity alias -> entity's id
 				$this->_childrenMap[$parentAlias][$parentLocalId][$entityAlias][$entityId] = $entityId;
 				
-			// ROOT ENTITIES
+			// If entity is a ROOT ENTITY
 			}else{
 				
+				// If already caches
 				if(isset($this->_entityMap[$entityName][$entityId])) {
 					continue;
 				}
 				
 				$this->_rootCount++;
 				
-				$entity = $this->_getEntity($data,$entityName);
+				// Get / create the root entity and save
+				$entity = $this->_getEntity($data,$entityName); // Fill entity w/ data
 				$this->_entityMap[$entityAlias][$entityId] = $entity;
 				$this->_rootAliases[$entityAlias] = $entityAlias;
 				$parents[$entityAlias] = $entityId;
 			}
 		}
 	}
-	
-	public function hydrateAll($data,$resultMapping,array $options=array())
-	{	
-		$this->_resultMapping = $resultMapping;
-		
-		$this->_prepare();
-		
-		$this->_options = $options;
-		
-		foreach($data as $row) {
-			$this->hydrateRow($row);
-		}
-		
-		$results = array();
-		$this->organizeEntities($results);
-		
-		return $results;
-	}
 
+
+	/**
+	 * 	Actually create the tree of parents and children
+	 *  AKA - assign children as property values of parents
+	 **/
 	public function organizeEntities(&$results)
 	{
 		// Loop through root aliases and build tree
