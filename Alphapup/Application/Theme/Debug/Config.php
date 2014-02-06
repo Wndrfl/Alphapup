@@ -1,7 +1,7 @@
 <?php
 $config = array(
 	'css' => array(
-		$this->helper('asset')->url('alphapup.profiler.css')
+		//$this->helper('asset')->url('alphapup.profiler.css')
 	),
 	'scaffolding' => array(
 		'plugin' => 'Alphapup',

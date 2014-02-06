@@ -41,6 +41,11 @@ class ExprBuilder
 		return new Expr\Comparison($leftExpr,Expr\Comparison::O_EQUALS,$rightExpr);
 	}
 	
+	public function isIn($leftExpr,$rightExpr)
+	{
+		return new Expr\Comparison($leftExpr,Expr\Comparison::O_IN,$rightExpr);
+	}
+	
 	public function select($columns=null)
 	{
 		if(is_null($columns)) {

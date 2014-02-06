@@ -1,4 +1,8 @@
 <?php
+/**
+ * This file preloads and configures an autoloader to be
+ * used in the initial loading of the framework.
+ */
 require __DIR__.'/../Alphapup/Core/ClassLoader/UniversalClassLoader.php';
 $loader = new Alphapup\Core\ClassLoader\UniversalClassLoader();
 $loader->registerNamespaces(array(

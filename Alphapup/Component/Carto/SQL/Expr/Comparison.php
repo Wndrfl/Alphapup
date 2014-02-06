@@ -4,7 +4,8 @@ namespace Alphapup\Component\Carto\SQL\Expr;
 class Comparison
 {
 	const
-		O_EQUALS		= '=';
+		O_EQUALS		= '=',
+		O_IN		= 'IN';
 		
 	private
 		$_leftExpr = '',

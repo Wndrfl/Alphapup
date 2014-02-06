@@ -9,7 +9,6 @@ class Plugin implements PluginInterface
 	
 	public function boot(Container $container)
 	{
-		$container->importConfigFile(__DIR__.'/Assets.php');
 		$container->importConfigFile(__DIR__.'/Components.php');
 		$container->importConfigFile(__DIR__.'/Core.php');
 		$container->importConfigFile(__DIR__.'/Profiler.php');
@@ -24,30 +23,9 @@ class Plugin implements PluginInterface
 	}
 	
 	public function postBoot(Container $container)
-	{		
-		$this->setupAssets($container);
+	{
 		$this->setupCartoNamespaces($container);
 		$this->setupProfiler($container);
-	}
-
-	public function setupAssets(Container $container)
-	{
-		$router = $container->get('alphapup.router');
-		$routes = array();
-		foreach($container->getConfig('assets')->groups->toArray() as $name => $group) {
-			if(isset($group['url'])) {
-				$routes[$group['url']] = array(
-					'pattern' => $group['url'],
-					'controller' => 'Alphapup\\Application\\Controller\\Assets\\Assets',
-					'action' => 'index',
-					'defaults' => array(
-						'group' => $name,
-						'type' => $group['type']
-					)
-				);
-			}
-		}
-		$router->setRoutes($routes);
 	}
 	
 	public function setupCarto(Container $container)

@@ -1,10 +1,5 @@
 <?php
 $config['routes'] = array(
-	'alphapup.assets.setup' => array(
-		'pattern' => 'setup',
-		'controller' => 'Alphapup\\Application\\Controller\\Assets\\Assets',
-		'action' => 'setup'
-	),
 	
 	'alphapup.profiler' => array(
 		'pattern' => 'profiler',

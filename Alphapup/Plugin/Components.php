@@ -1,23 +1,6 @@
 <?php
 $config['services'] = array(
 	
-	'assets.asset_manager' => array(
-		'class' => 'Alphapup\Component\Asset\AssetManager',
-		'arguments' => array(
-			'groups' => '%assets.groups%'
-		),
-	),
-	
-	'assets.asset_setup' => array(
-		'class' => 'Alphapup\Component\Asset\AssetSetup',
-		'shared' => true,
-		'arguments' => array(
-			'debug' => '%kernel.debug%',
-			'finder' => '@alphapup.finder',
-			'plugins' => '%plugins%'
-		),
-	),
-	
 	'carto' => array(
 		'class' => 'Alphapup\Component\Carto\Carto',
 		'shared' => true,
@@ -133,18 +116,6 @@ $config['services'] = array(
 		'tags' => array(
 			'filter'
 		)
-	),
-	
-	'helper.asset_helper' => array(
-		'class' => 'Alphapup\Component\Helper\AssetHelper',
-		'shared' => true,
-		'arguments' => array(
-			'assetManager' => '@assets.asset_manager',
-			'urlHelper' => '@helper.url_helper'
-		),
-		'tags' => array(
-			'view.helper',
-		),
 	),
 	
 	'helper.filter' => array(

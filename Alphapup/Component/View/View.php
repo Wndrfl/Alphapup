@@ -73,15 +73,6 @@ class View implements \ArrayAccess
 			if(isset($config['css']) && is_array($config['css'])) {
 				foreach($config['css'] as $section => $css) {
 					if(is_array($css)) {
-						if($section == 'assets') {
-							foreach($css as $asset) {
-								try {
-									$this->css($this->helper('asset')->url($asset));
-								}catch(\Exception $e) {
-									trigger_error($e->getMessage(),E_USER_ERROR);
-								}
-							}
-						}
 						if($section == 'href') {
 							foreach($css as $href) {
 								$this->css($href);

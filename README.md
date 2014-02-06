@@ -14,10 +14,10 @@ A PHP based framework by WNDRFL.
 		- the kernel goes to each registered plugin and runs a postBoot() process, allowing the plugin to interact with the framework AFTER everything has been configged
 - the kernel fires events for requests and responses
 - the kernel gets the router and passes it the request
-- the kernel gets the dispatcher and dispatches the request to the respnse
+- the kernel gets the dispatcher and dispatches the request to the response
 - the kernel renders the response
 - the kernel caches the config
-- the kernel shutsdown, which tells the profiler to save
+- the kernel shuts down, which tells the profiler to save
 
 ## Components
 
@@ -162,3 +162,12 @@ Here is an example CQL statement:
 <pre>
 	FETCH a, au FROM Account a ASSOCIATED a._accountUser au OPTIONAL ASSOCIATED a._comments c WHERE a._id = 1 AND c._id = 1 LIMIT 10
 </pre>
+
+
+
+
+
+TO CREATE A NEW APPLICATION
+
+1. add to bootstrap.php
+2. add to alphapup.php plugins

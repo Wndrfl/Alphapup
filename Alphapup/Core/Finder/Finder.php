@@ -32,10 +32,11 @@ class Finder
 	{
 		$dh = opendir($dir);
 		$entries = array();
+		$ignore = array('cgi-bin','.','..','._');
 	    while(false !== $entry = readdir($dh)) {
-			if($entry != "." && $entry != "..") {
-				$entries[] = $entry;
-			}
+	        if(!in_array($entry,$ignore) and substr($entry, 0, 1) != '.') {
+	            $entries[] = $entry;
+	        }
 		}
 		closedir($dh);
 		return $entries;

@@ -14,6 +14,9 @@ class Cache
 	{
 		$this->setFinder($finder);
 		$this->setCacheDir($cacheDir);
+		
+		// TODO: get smart and not run cleanup every time.
+		$this->cleanUp();
 	}
 	
 	public function _get($path)
@@ -26,6 +29,19 @@ class Cache
 	
 	public function cacheDir() {
 		return $this->_cacheDir;
+	}
+	
+	public function cleanUp()
+	{
+		foreach($this->_finder->fileNames($this->cacheDir()) as $filename) {
+			$path = $this->cacheDir().$filename;
+			if(!$c = $this->_get($path)) {
+				continue;
+			}
+			if(time() > $c[0]) {  
+				unlink($path);
+			}
+		}
 	}
 	
 	public function get($id)

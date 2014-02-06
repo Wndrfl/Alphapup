@@ -71,7 +71,7 @@ class Dispatcher
 		}
 		
 		if(method_exists($controller,$a)) {
-			call_user_func_array(array($controller,$a),$p);
+			$returnedResponse = call_user_func_array(array($controller,$a),$p);
 		}else{
 			throw new ActionDoesNotExistException($c,$a);
 		}
@@ -81,8 +81,14 @@ class Dispatcher
 			call_user_func_array(array($controller,'_afterLoad'),array());
 		}
 		
-		$content = @ob_get_clean();
-		$response->append($content);
+		// if the controller simply return it's own
+		// response object:
+		if($returnedResponse && $returnedResponse instanceof Response) {
+			$response = $returnedResponse;
+		}else{
+			$content = @ob_get_clean();
+			$response->append($content);
+		}
 	}
 	
 	public function setDefaultAction($action)

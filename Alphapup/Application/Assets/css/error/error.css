@@ -12,6 +12,6 @@ p { font-size:18px; line-height:22px; margin-top:20px;}
 .trace th { text-align:left; padding:10px 20px;}
 .trace tr:nth-child(even) { background:#daf8da;}
 
-#title { background:url('/assets/alphapup/images/error/top_logo.png') no-repeat top left; width:280px; height:120px; margin-bottom:20px;}
+#title { width:280px; height:120px; margin-bottom:20px;}
 
 #wrapper { width:960px; margin:100px auto;}

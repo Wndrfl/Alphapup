@@ -20,7 +20,7 @@
 
 #title { font-size:25px; margin-bottom:40px;}
 
-#top_logo { background:url('/assets/alphapup/images/profiler/top_logo.png') no-repeat top left; width:280px; height:120px; display:block;}
+#top_logo { width:280px; height:120px; display:block;}
 
 #wrapper { width:960px; margin:0px auto; padding-top:40px;}
 

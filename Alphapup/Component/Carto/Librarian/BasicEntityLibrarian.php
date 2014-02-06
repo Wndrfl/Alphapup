@@ -306,28 +306,66 @@ class BasicEntityLibrarian
 		$qb->from($this->_mapping->tableName());
 		
 		// Loop thru criteria to build queries conditions
-		$conditions = array();
 		$params = array();
-		foreach($criteria as $propertyName => $value) {
-			
-			// If there is a column that corresponds to the supplied propertyName
-			if($columnName = $this->_mapping->columnName($propertyName)) {
-				$conditions[] = $qb->expr()->isEqualTo(
-					$qb->expr()->column($this->_mapping->tableName(),$this->_mapping->columnName($propertyName)),
-					'?'
-				);
-				$params[] = $value;
+		if($criteria) {
+			$conditions = array();
+			foreach($criteria as $propertyName => $value) {
 				
-			// If the property has an association to another entity
-			}elseif($assoc = $this->_mapping->propertyAssociation($propertyName)) {
-				$conditions[] = $qb->expr()->isEqualTo(
-					$qb->expr()->column($this->_mapping->tableName(),$assoc['local']),
-					'?'
-				);
-				$params[] = $value;
+				// Appended comparison instruction to the propertyName?
+				$propertyNameParts = explode(' ',$propertyName);
+				if(isset($propertyNameParts[1])) {
+					$propertyName = $propertyNameParts[0];
+					
+					switch($propertyNameParts[1]) {							
+						case 'in':
+							if(is_array($value)) {
+								$placeholders = array();
+								foreach($value as $v) {
+									$placeholders[] = '?';
+									$params[] = $v;
+								}
+								$placeholder = '('.implode(',',$placeholders).')';
+							}else{
+								$params[] = $value;
+								$placeholder = '?';
+							}
+							$conditions[] = $qb->expr()->isIn(
+								$qb->expr()->column($this->_mapping->tableName(),$this->_mapping->columnName($propertyName)),
+								$placeholder
+							);
+							break;
+							
+						case '=':
+						case 'isEqualTo':
+						default:
+							$conditions[] = $qb->expr()->isEqualTo(
+								$qb->expr()->column($this->_mapping->tableName(),$this->_mapping->columnName($propertyName)),
+								'?'
+							);
+							$params[] = $value;
+							break;
+					}
+			
+				// If there is a column that corresponds to the supplied propertyName
+				}elseif($columnName = $this->_mapping->columnName($propertyName)) {
+					
+					$conditions[] = $qb->expr()->isEqualTo(
+						$qb->expr()->column($this->_mapping->tableName(),$this->_mapping->columnName($propertyName)),
+						'?'
+					);
+					$params[] = $value;
+				
+				// If the property has an association to another entity
+				}elseif($assoc = $this->_mapping->propertyAssociation($propertyName)) {
+					$conditions[] = $qb->expr()->isEqualTo(
+						$qb->expr()->column($this->_mapping->tableName(),$assoc['local']),
+						'?'
+					);
+					$params[] = $value;
+				}
 			}
+			$qb->where($conditions);
 		}
-		$qb->where($conditions);
 		
 		// Check for order by statements
 		if(is_array($orderBy)) {
@@ -388,8 +426,43 @@ class BasicEntityLibrarian
 		$params = array();
 		foreach($criteria as $propertyName => $value) {
 			
+			// Appended comparison instruction to the propertyName?
+			$propertyNameParts = explode(' ',$propertyName);
+			if(isset($propertyNameParts[1])) {
+				$propertyName = $propertyNameParts[0];
+				
+				switch($propertyNameParts[1]) {							
+					case 'in':
+						if(is_array($value)) {
+							$placeholders = array();
+							foreach($value as $v) {
+								$placeholders[] = '?';
+								$params[] = $v;
+							}
+							$placeholder = '('.implode(',',$placeholders).')';
+						}else{
+							$params[] = $value;
+							$placeholder = '?';
+						}
+						$conditions[] = $qb->expr()->isIn(
+							$qb->expr()->column($this->_mapping->tableName(),$this->_mapping->columnName($propertyName)),
+							$placeholder
+						);
+						break;
+						
+					case '=':
+					case 'isEqualTo':
+					default:
+						$conditions[] = $qb->expr()->isEqualTo(
+							$qb->expr()->column($this->_mapping->tableName(),$this->_mapping->columnName($propertyName)),
+							'?'
+						);
+						$params[] = $value;
+						break;
+				}
+				
 			// If there is a column that corresponds to the supplied propertyName
-			if($columnName = $this->_mapping->columnName($propertyName)) {
+			}elseif($columnName = $this->_mapping->columnName($propertyName)) {
 			
 				$conditions[] = $qb->expr()->isEqualTo(
 					$qb->expr()->column($this->_mapping->tableName(),$this->_mapping->columnName($propertyName)),

@@ -115,6 +115,11 @@ class Kernel
 		return false;
 	}
 	
+	public function getEnvironment()
+	{
+		return $this->_environment;
+	}
+	
 	public function getRootDir()
 	{
 		if(null === $this->_rootDir) {

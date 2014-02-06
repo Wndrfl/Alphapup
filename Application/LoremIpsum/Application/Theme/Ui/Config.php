@@ -1,9 +1,6 @@
 <?php
 $config = array(
 	'css' => array(
-		'assets' => array(
-			'greenhotelsonly.main.css'
-		)
 	),
 	'scaffolding' => array(
 		'plugin' => 'LoremIpsum',
