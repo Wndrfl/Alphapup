@@ -30,14 +30,8 @@ class Dispatcher
 		return $this->_container->getConfig('kernel')->get('default_controller');
 	}
 	
-	public function dispatch(Request $request,Response $response)
+	public function dispatch($c,$a,$p=array(),Response $response)
 	{
-		$c = $request->getControllerName();
-		$c = (!empty($c) && $c) ? $c : $this->defaultController();
-		$a = $request->getActionName();
-		$a = (!empty($a) && $a) ? $a : $this->defaultAction();
-		$p = $request->getParams();
-		
 		$controller = new $c();
 		$this->_eventCenter->fire(new ControllerEvent());
 		
@@ -89,6 +83,20 @@ class Dispatcher
 			$content = @ob_get_clean();
 			$response->append($content);
 		}
+		
+		return $response;
+	}
+	
+	public function dispatchRequest(Request $request,Response $response)
+	{
+		$c = $request->getControllerName();
+		$c = (!empty($c) && $c) ? $c : $this->defaultController();
+		$a = $request->getActionName();
+		$a = (!empty($a) && $a) ? $a : $this->defaultAction();
+		$p = $request->getParams();
+		
+		$this->dispatch($c,$a,$p,$response);
+
 	}
 	
 	public function setDefaultAction($action)

@@ -1,5 +1,5 @@
 <?php
-namespace Alphapup\Application\Controller\Profiler;
+namespace Profiler\Application\Controller;
 
 use Alphapup\Core\Controller\Controller;
 
@@ -13,8 +13,8 @@ class Profiler extends Controller
 		$profiler = $this->get('profiler');
 		$view->profiles = array_reverse($profiler->getProfiles());
 		
-		$view->theme('Alphapup','Application/Theme/Debug');
-		$view->addView('Alphapup','Application/View/Profiler/Home/Home.php');
+		$view->theme('Profiler','Application/Theme/Debug');
+		$view->addView('Profiler','Application/View/Profiler/Home/Home.php');
 		$view->display();
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 $config['routes'] = array(
 	'loremipsum' => array(
-		'pattern' => '',
+		'pattern' => '/',
 		'controller' => 'LoremIpsum\\Application\\Controller\\Index',
 		'action' => 'index'
 	),

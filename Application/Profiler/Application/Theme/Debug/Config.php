@@ -1,10 +1,10 @@
 <?php
 $config = array(
 	'css' => array(
-		//$this->helper('asset')->url('alphapup.profiler.css')
+		'/profiler/style.css'
 	),
 	'scaffolding' => array(
-		'plugin' => 'Alphapup',
+		'plugin' => 'Profiler',
 		'file' => 'Application/Scaffolding/Scaffolding.php'
 	),
 );

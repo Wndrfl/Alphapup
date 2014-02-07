@@ -12,7 +12,6 @@ class Plugin implements PluginInterface
 		$container->importConfigFile(__DIR__.'/Components.php');
 		$container->importConfigFile(__DIR__.'/Core.php');
 		$container->importConfigFile(__DIR__.'/Profiler.php');
-		$container->importConfigFile(__DIR__.'/Routes.php');
 		
 		$this->setupCarto($container);
 	}

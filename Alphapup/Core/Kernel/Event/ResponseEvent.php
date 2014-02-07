@@ -9,8 +9,14 @@ class ResponseEvent extends KernelEvent
 	private
 		$_response;
 		
-	public function __construct()
+	public function __construct(Response $response)
 	{
 		parent::__construct('response','Response object successfully created.');
+		$this->_response = $response;
+	}
+	
+	public function response() 
+	{
+		return $this->_response;
 	}
 }

@@ -9,5 +9,6 @@ $loader->registerNamespaces(array(
 	'Alphapup' => __DIR__.'/..',
 	'Application' => __DIR__.'/..',
 	'LoremIpsum' => __DIR__.'/../Application',
+	'Profiler' => __DIR__.'/../Application',
 ));
 spl_autoload_register(array($loader,'loadClass'));

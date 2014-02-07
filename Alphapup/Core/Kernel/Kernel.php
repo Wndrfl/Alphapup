@@ -10,7 +10,9 @@ use Alphapup\Core\Finder\Finder;
 use Alphapup\Core\Http\Request;
 use Alphapup\Core\Http\Response;
 use Alphapup\Core\Kernel\Event\ResponseEvent;
+use Alphapup\Core\Kernel\Event\PreRenderEvent;
 use Alphapup\Core\Kernel\Event\RequestEvent;
+use Alphapup\Core\Kernel\Event\ShutdownEvent;
 use Alphapup\Core\Kernel\Exception\PluginDoesNotExistException;
 
 class Kernel
@@ -57,11 +59,13 @@ class Kernel
 		$router->route($request);
 		
 		$dispatcher = $this->_container->get('alphapup.kernel.dispatcher');
-		$dispatcher->dispatch($request,$response);
-			
-		$response->render();
+		$dispatcher->dispatchRequest($request,$response);
 		
 		$this->setConfigCache();
+
+		$eventCenter->fire(new PreRenderEvent($request,$response));
+		$response->render();
+		
 		exit;
 	}
 	
@@ -115,9 +119,19 @@ class Kernel
 		return false;
 	}
 	
+	public function getContainer()
+	{
+		return $this->_container;
+	}
+	
 	public function getEnvironment()
 	{
 		return $this->_environment;
+	}
+	
+	public function getRequest()
+	{
+		return $this->_request;
 	}
 	
 	public function getRootDir()
@@ -230,6 +244,7 @@ class Kernel
 	
 	public function shutdown()
 	{
-		$this->_container->get('profiler')->save($this->_request);
+		$eventCenter = $this->_container->get('alphapup.event_center');
+		$eventCenter->fire(new ShutdownEvent($this->_request,$this->_response));
 	}
 }

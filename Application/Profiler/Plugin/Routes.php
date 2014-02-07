@@ -3,13 +3,19 @@ $config['routes'] = array(
 	
 	'alphapup.profiler' => array(
 		'pattern' => 'profiler',
-		'controller' => 'Alphapup\\Application\\Controller\\Profiler\\Profiler',
+		'controller' => 'Profiler\\Application\\Controller\\Profiler',
 		'action' => 'index'
+	),
+	
+	'alphapup.profiler' => array(
+		'pattern' => 'profiler/style.css',
+		'controller' => 'Profiler\\Application\\Controller\\Profiler',
+		'action' => 'style'
 	),
 	
 	'alphapup.profiler.profile' => array(
 		'pattern' => 'profiler/profile/{id}',
-		'controller' => 'Alphapup\\Application\\Controller\\Profiler\\Profile',
+		'controller' => 'Profiler\\Application\\Controller\\Profile',
 		'action' => 'index',
 		'requirements' => array(
 			'id' => '[a-z0-9]+'
@@ -18,7 +24,7 @@ $config['routes'] = array(
 	
 	'alphapup.profiler.profile.config' => array(
 		'pattern' => 'profiler/profile/{id}/config',
-		'controller' => 'Alphapup\\Application\\Controller\\Profiler\\Profile',
+		'controller' => 'Profiler\\Application\\Controller\\Profile',
 		'action' => 'config',
 		'requirements' => array(
 			'id' => '[a-z0-9]+'
@@ -27,7 +33,7 @@ $config['routes'] = array(
 	
 	'alphapup.profiler.profile.dexter' => array(
 		'pattern' => 'profiler/profile/{id}/dexter',
-		'controller' => 'Alphapup\\Application\\Controller\\Profiler\\Profile',
+		'controller' => 'Profiler\\Application\\Controller\\Profile',
 		'action' => 'dexter',
 		'requirements' => array(
 			'id' => '[a-z0-9]+'
@@ -36,7 +42,7 @@ $config['routes'] = array(
 
 	'alphapup.profiler.profile.events' => array(
 		'pattern' => 'profiler/profile/{id}/events',
-		'controller' => 'Alphapup\\Application\\Controller\\Profiler\\Profile',
+		'controller' => 'Profiler\\Application\\Controller\\Profile',
 		'action' => 'events',
 		'requirements' => array(
 			'id' => '[a-z0-9]+'

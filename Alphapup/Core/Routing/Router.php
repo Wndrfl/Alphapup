@@ -32,7 +32,8 @@ class Router
 	{	
 		$uri = explode('?',$request->getUrl('uri'));
 		$uri = $uri[0];
-		$check = ltrim($uri,'/');
+		//$check = ltrim($uri,'/');
+		$check = $uri;
 		
 		// no uri
 		if($check == '') {
@@ -46,6 +47,7 @@ class Router
 		}else{
 			foreach($this->_routes as $k => $v) {
 				$params = $v->matchPattern($check);
+				
 				if($params !== false) {
 					$route = $v;
 					break;

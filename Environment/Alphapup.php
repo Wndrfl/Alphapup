@@ -15,8 +15,8 @@ class Alphapup extends Kernel
 			'LoremIpsum' => new LoremIpsum\Plugin\Plugin(),
 		);
 		
-		if($this->getEnvironment() == 'dev') {
-			//$plugins['PluginName'] = new Another\Plugin\Plugin();
+		if(strtolower($this->getEnvironment()) == 'dev') {
+			$plugins['Profiler'] = new Profiler\Plugin\Plugin();
 		}
 		
 		return $plugins;

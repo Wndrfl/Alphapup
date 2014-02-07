@@ -1,5 +1,5 @@
 <?php
-namespace Alphapup\Application\Controller\Profiler;
+namespace Profiler\Application\Controller;
 
 use Alphapup\Core\Controller\Controller;
 

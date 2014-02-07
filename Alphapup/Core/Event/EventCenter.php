@@ -25,6 +25,7 @@ class EventCenter
 			$this->_listeners[$event] = array();
 		}
 		$this->_listeners[$event][] = $callback;
+		return $this;
 	}
 	
 	public function fire(EventTicket $event)

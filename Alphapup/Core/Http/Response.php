@@ -284,6 +284,11 @@ class Response
         return !$sent;
     }
 
+	public function content()
+	{
+		return implode('',$this->_response);
+	}
+
 	public function outputResponse() 
 	{
 		echo implode('',$this->_response);
@@ -328,6 +333,12 @@ class Response
 
         return $this;
     }
+
+	public function setContent($content)
+	{
+		$this->_response = array($content);
+		return $this;
+	}
 	
 	public function setHeaders($header,$value,$replace=true,$code=null) 
 	{

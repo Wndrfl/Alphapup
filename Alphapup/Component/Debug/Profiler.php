@@ -14,6 +14,7 @@ class Profiler
 		$_cacheName = 'profiler',
 		$_cacheTtl = 3600,
 		$_collectors = array(),
+		$_currentProfile,
 		$_enabled=true;
 	
 	public function __construct($settings=array(),Cache $cache)
@@ -45,6 +46,15 @@ class Profiler
 	public function enable()
 	{
 		$this->_enabled = true;
+	}
+	
+	public function getCurrentProfile()
+	{
+		if($this->_currentProfile) {
+			return $this->_currentProfile;
+		}
+		
+		return false;
 	}
 	
 	public function getProfile($id)
@@ -87,6 +97,8 @@ class Profiler
 		$profiles[$profile->id()] = $profile;
 		
 		$this->_cache->set($this->_cacheName,$profiles,$this->_cacheTtl);
+		
+		$this->_currentProfile = $profile;
 	}
 	
 	public function setCache(Cache $cache)
