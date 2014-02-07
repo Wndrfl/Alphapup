@@ -23,6 +23,11 @@ class AccountUser
 	 */
 	private $_displayName;
 	
+	public function account()
+	{
+		return $this->_account;
+	}
+	
 	public function displayName()
 	{
 		return $this->_displayName;

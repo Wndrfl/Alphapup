@@ -16,14 +16,13 @@ class ManyToManyProxy extends CollectionProxy
 		$_joinTable;
 		
 	public function __construct(Mapping $mapping,
-								ArrayCollection $collection,
 								BasicEntityLibrarian $foreignLibrarian,
 								$joinTable,
 								$localJoinId,
 								$localJoinColumn,
 								$foreignJoinColumn)
 	{
-		parent::__construct($mapping,$collection);
+		parent::__construct();
 		$this->_foreignJoinColumn = $foreignJoinColumn;
 		$this->_foreignLibrarian = $foreignLibrarian;
 		$this->_localJoinColumn = $localJoinColumn;
@@ -33,8 +32,8 @@ class ManyToManyProxy extends CollectionProxy
 	
 	public function __load()
 	{
-		if(!$this->__isInitialized__ && $this->_foreignLibrarian) {
-			$this->__isInitialized__ = true;
+		if(!$this->_isInitialized && $this->_foreignLibrarian) {
+			$this->_isInitialized = true;
 
 			$foreignMapping = $this->_foreignLibrarian->mapping();
 				

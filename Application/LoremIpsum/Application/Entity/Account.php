@@ -10,7 +10,6 @@ class Account
 {
 	//@Carto\Association (type="oneToOne",entity="AccountUser")
 	//private $_accountUser;
-	
 	/**
 	 * @Carto\OneToOne (entity="AccountUser",mappedBy="_account",lazy=false)
 	 */
@@ -22,8 +21,8 @@ class Account
 	private	$_active = false;
 	
 	/**
-	* @Carto\OneToMany (entity="Comment",mappedBy="_account",lazy=true)
-	*/
+	 * @Carto\OneToMany (entity="Comment",mappedBy="_account",lazy=true)
+	 */
 	private $_comments = array();
 	
 	/**
@@ -33,8 +32,8 @@ class Account
 	private $_email;
 	
 	/**
-	* @Carto\ManyToMany (entity="Group",mappedBy="_accounts",lazy=true)
-	*/
+	 * @Carto\ManyToMany (entity="Group",mappedBy="_accounts",lazy=true)
+	 */
 	private $_groups = array();
 	
 	/**

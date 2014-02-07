@@ -556,7 +556,7 @@ class BasicEntityLibrarian
 		// Try to find an exists copy of this entity
 		// to keep from recreating it
 		if($entity = $library->tryGetById($identifier,$className)) {
-			die('hi');
+			
 			$oid = $library->createId($entity);
 			
 			// If the found entity is an UNINITIALIZED PROXY
@@ -660,7 +660,7 @@ class BasicEntityLibrarian
 					}
 				
 				}elseif($association['type'] == Mapping::ONE_TO_MANY) {
-				
+
 					// Get the mapping of the MANY entity
 					$targetMapping = $this->_carto->mapping($association['entity']);
 					$targetLibrarian = $this->_carto->library()->librarian($association['entity']);
@@ -717,8 +717,7 @@ class BasicEntityLibrarian
 
 					$collectionProxy = new ManyToManyProxy(	
 						$this->_mapping,
-						new ArrayCollection(),
-						$this,
+						$targetLibrarian,
 						$ownerAssoc['joinTable'],
 						$localIdValue,
 						$ownerAssoc['joinColumns']['foreign'],

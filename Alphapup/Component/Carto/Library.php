@@ -119,7 +119,7 @@ class Library
 			}
 			$value = array($value);
 		}elseif($value instanceof CollectionProxy) {
-			$value = $value->collection();
+			//$value = $value->collection();
 		}
 		
 		$targetMapping = $this->_carto->mapping($assoc['entity']);

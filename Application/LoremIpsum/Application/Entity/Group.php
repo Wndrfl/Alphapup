@@ -13,7 +13,7 @@ class Group
 	private $_id;
 	
 	/**
-	 * @Carto\ManyToMany (entity="Account", inversedBy="_groups", local="id", foreign="id", joinTable="accounts_groups", joinColumnLocal="group_id", joinColumnForeign="account_id")
+	 * @Carto\ManyToMany (entity="Account", inversedBy="_groups", local="id", foreign="id", joinTable="accounts_groups", joinColumnLocal="group_id", joinColumnForeign="account_id", lazy=true)
 	 */
 	private $_accounts = array();
 	

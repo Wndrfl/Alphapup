@@ -200,7 +200,7 @@ class Hydrator
 			// If entity is a ROOT ENTITY
 			}else{
 				
-				// If already caches
+				// If already cached
 				if(isset($this->_entityMap[$entityName][$entityId])) {
 					continue;
 				}
