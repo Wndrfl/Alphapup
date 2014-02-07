@@ -102,7 +102,7 @@ EOF;
 		try {
 			$view = $this->_container->get('view');
 			$view->title($title);
-			$view->theme('Alphapup','Core/Debug/Theme/Error');
+			$view->theme('Alphapup','Core/Debug/Theme');
 			
 			if($this->_debug) {
 				$view->exception = $e;

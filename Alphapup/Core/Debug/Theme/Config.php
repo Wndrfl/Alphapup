@@ -5,6 +5,6 @@ $config = array(
 	),
 	'scaffolding' => array(
 		'plugin' => 'Alphapup',
-		'file' => 'Application/Scaffolding/Scaffolding.php'
+		'file' => 'Component/View/Scaffolding.php'
 	),
 );
