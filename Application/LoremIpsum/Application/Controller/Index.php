@@ -21,6 +21,21 @@ class Index extends Controller
 	{
 		$view = $this->get('view');
 		
+		$fetch = $this->get('fetch');
+		$accounts = $fetch->fetch('account');
+		
+		foreach($accounts as $account) {
+			echo $account->email();
+			echo '<br />';
+		}
+		
+		$view->title('ALPHAPUP SAYS RELAX');
+		$view->theme('LoremIpsum','Application/Theme/Default');
+		$view->addView('LoremIpsum','Application/View/Index/Carto.php');
+		$view->display();
+		/*
+		$view = $this->get('view');
+		
 		$carto = $this->get('carto');
 		
 		$accounts = $this->get('account_repository');
@@ -31,5 +46,6 @@ class Index extends Controller
 		$view->theme('LoremIpsum','Application/Theme/Default');
 		$view->addView('LoremIpsum','Application/View/Index/Carto.php');
 		$view->display();
+		* */
 	}
 }

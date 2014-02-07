@@ -96,6 +96,18 @@ $config['services'] = array(
 		),
 	),
 	
+	'fetch' => array(
+		'class' => 'Alphapup\Component\Fetch\Fetch',
+		'shared' => true,
+		'arguments' => array(
+			'entities' => '%entities%',
+			'introspect' => '@introspect',
+			'dexter' => '@dexter',
+			'proxyDir' => '%carto.proxy_dir%',
+			'proxyNamespace' => '%carto.proxy_namespace%',
+		),
+	),
+	
 	'filter.css_minifier' => array(
 		'class' => 'Alphapup\Component\Filter\Minify\CssMinifier',
 		'tags' => array(
