@@ -24,24 +24,7 @@ class Index extends Controller
 		$carto = $this->get('carto');
 		
 		$accounts = $this->get('account_repository');
-		if($account1 = $accounts->findById(1)) {
-			echo $account1->email();
-
-			$account1->setEmail('asdf@gmail.com');
-			echo $account1->email();
-			echo $account1->accountUser()->displayName();
-			echo $account1->accountUser()->setDisplayName('weenod');
-			foreach($account1->comments() as $comment) {
-				echo '<br />'.$comment->comment();
-				$comment->setComment('mer');
-			}
-			foreach($account1->groups() as $group) {
-				echo '<br />'.$group->name();
-				$group->setName('asdfasdf');
-			}
-			
-			$accounts->save($account1)->commit();
-		}
+		$accounts->test();
 		
 		$view->title('ALPHAPUP SAYS RELAX');
 		$view->theme('LoremIpsum','Application/Theme/Default');

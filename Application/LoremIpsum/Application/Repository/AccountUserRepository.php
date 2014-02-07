@@ -2,9 +2,9 @@
 namespace LoremIpsum\Application\Repository;
 
 use Alphapup\Component\Carto\Carto;
-use LoremIpsum\Application\Entity\Account;
+use LoremIpsum\Application\Entity\AccountUser;
 
-class AccountRepository
+class AccountUserRepository
 {
 	private
 		$_carto,
@@ -13,7 +13,7 @@ class AccountRepository
 	public function __construct(Carto $carto)
 	{
 		$this->_carto = $carto;
-		$this->_librarian = $carto->library()->librarian('account');
+		$this->_librarian = $carto->library()->librarian('accountUser');
 	}
 	
 	public function commit()
@@ -67,11 +67,7 @@ class AccountRepository
 	
 	public function test()
 	{
-		$cql = 'FETCH a, au FROM Account a ASSOCIATED a._accountUser au OPTIONAL ASSOCIATED a._comments c WHERE a._id = 1 AND c._id = 1 LIMIT 10';
-		$this->_carto->cql($cql)->execute();
-		 return;
-		
-		$cql = $this->_carto->cqlBuilder();
+		$cql = $this->_carto->librarian('account')->cqlBuilder();
 		$cql
 			->fetch('account')
 			->associated(array('accountUser'))

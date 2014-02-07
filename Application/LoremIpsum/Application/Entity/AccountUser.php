@@ -3,7 +3,6 @@ namespace LoremIpsum\Application\Entity;
 
 /**
  * @Carto\Table (name="accounts_user")
- * @Carto\
  */
 class AccountUser
 {

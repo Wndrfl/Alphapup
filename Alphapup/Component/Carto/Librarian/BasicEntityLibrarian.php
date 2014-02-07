@@ -650,13 +650,28 @@ class BasicEntityLibrarian
 
 						$this->_mapping->setEntityValue($entity,$association['propertyName'],$assocEntity);
 				
-					// if not owner, it can't be lazy
+					// if not owner, it MUST be lazy (to prevent infinite loops)
 					}else{
+						
 						$this->_mapping->setEntityValue(
 							$entity,
 							$association['propertyName'],
 							$this->loadOneToOneEntity($entity,$association)
 						);
+						
+						/*
+						// get mapping for the OTHER ENTITY
+						$assocMapping = $this->_carto->mapping($association['entity']);
+						$targetAssoc = $assocMapping->propertyAssociation($association['mappedBy']);
+						$joinColumnValue = $data[$this->_mapping->propertyName($targetAssoc['foreign'])];
+
+						$associatedId = array();
+						$associatedId[$assocMapping->propertyName($targetAssoc['foreign'])] = $joinColumnValue;
+						
+						$assocEntity = $this->_carto->proxyFactory()->proxy($association['entity'],$associatedId);
+						$this->_mapping->setEntityValue($entity,$association['propertyName'],$assocEntity);
+						*/
+						
 					}
 				
 				}elseif($association['type'] == Mapping::ONE_TO_MANY) {

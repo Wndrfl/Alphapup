@@ -8,10 +8,8 @@ use LoremIpsum\Application\Entity\AccountUser;
  */
 class Account
 {
-	//@Carto\Association (type="oneToOne",entity="AccountUser")
-	//private $_accountUser;
 	/**
-	 * @Carto\OneToOne (entity="AccountUser",mappedBy="_account",lazy=false)
+	 * @Carto\OneToOne (entity="AccountUser",mappedBy="_account",lazy=true)
 	 */
 	private $_accountUser;
 	

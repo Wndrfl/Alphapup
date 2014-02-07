@@ -27,9 +27,12 @@
 
 <div id="<?php echo $profileId; ?>" class="alphapup-profiler-toolbar">
 	<div class="alphapup-profiler-toolbar-item dexter">
-		Queries: <?php echo intval($totalQueries); ?>
+		Queries: <a href="<?php echo $this['url']->url('alphapup.profiler.profile.dexter',array('id' => $profileId)); ?>" target="_blank"><?php echo intval($totalQueries); ?></a>
 	</div>
 	<div class="alphapup-profiler-toolbar-item controller">
-		<?php echo $controllerName; ?>::<?php echo $actionName; ?>
+		<a href="<?php echo $this['url']->url('alphapup.profiler.profile',array('id' => $profileId)); ?>" target="_blank"><?php echo $controllerName; ?>::<?php echo $actionName; ?></a>
+	</div>
+	<div class="alphapup-profiler-toolbar-item">
+		<a href="<?php echo $this['url']->url('alphapup.profiler.profile',array('id' => $profileId)); ?>" target="_blank">View Profile</a>
 	</div>
 </div>

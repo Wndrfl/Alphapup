@@ -162,6 +162,11 @@ $config['services'] = array(
 		'shared' => true,
 	),
 	
+	'lexer' => array(
+		'class' => 'Alphapup\Component\Lexer\TestLexer',
+		'shared' => false,
+	),
+	
 	'nitpick' => array(
 		'class' => 'Alphapup\Component\NitPick\NitPick',
 		'shared' => true,

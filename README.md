@@ -112,17 +112,17 @@ The method of defining this relationship is through special comments, and it tak
 		- `@Carto\Column (name="columnName")`
 		- This parameter is tied directly to a single column in the database table, and will be filled with the value of the supplied `columnName`.
 
-	- **One to One Relationship (dominant side)**
+	- **One to One Relationship (passive side)**
 		- `@Carto\OneToOne (entity="AnotherEntity",mappedBy="parameterInAnotherEntity",lazy=true)`
 		- This parameter holds a 'one to one' relationship with another `Entity` type.
 		- The `mappedBy` argument defines the parameter of the *other* `Entity` that will hold the `Entity` that is currently being defined.
-		- The `lazy` argument defines whether or not the related `Entity` should be loaded immediately, or only when used. If there is a chance that the relation will not be needed on a page load, then enabling lazy loading will help speed up the query to load the `Entities`. However, if the related `Entity` will almost certainly be used, disabling this argument will keep Carto from doing two queries, when one would suffice.
 
-	- **One to One Relationship (passive side)**
+	- **One to One Relationship (dominant side)**
 		- `@Carto\OneToOne (entity="AnotherEntity",local="localMappingColumn",foreign="foreignMappingColumn",inversedBy="parameterInAnotherEntity",lazy=true)`
 		- The `local` argument defines the table column where this `Entity` stores the `id` of the other `Entity`.
 		- The `foreign` argument defines the column in the other `Entity` that holds the value to be found in the `local` column.
 		- The `inversedBy` argument defines the parameter in the other `Entity` that is used to hold the current `Entity`
+		- The `lazy` argument defines whether or not the related `Entity` should be loaded immediately, or only when used. If there is a chance that the relation will not be needed on a page load, then enabling lazy loading will help speed up the query to load the `Entities`. However, if the related `Entity` will almost certainly be used, disabling this argument will keep Carto from doing two queries, when one would suffice.
 
 	- **One to Many Relationship**
 		- `@Carto\OneToMany (entity="AnotherEntity",mappedBy="parameterInAnotherEntity",lazy=true)`

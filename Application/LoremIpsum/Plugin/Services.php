@@ -7,4 +7,12 @@ $config['services'] = array(
 			'carto' => '@carto',
 		),
 	),
+	
+	'account_user_repository' => array(
+		'class' => 'LoremIpsum\Application\Repository\AccountUserRepository',
+		'shared' => true,
+		'arguments' => array(
+			'carto' => '@carto',
+		),
+	),
 );

@@ -1,8 +1,8 @@
-<?php $this->view('Alphapup','Application/View/Profiler/Profile/Header.php'); ?>
+<?php $this->view('Profiler','Application/View/Profiler/Profile/Header.php'); ?>
 
 <div id="profiler_content" class="clearfix">
 
-	<?php $this->view('Alphapup','Application/View/Profiler/Profile/Navigation.php'); ?>
+	<?php $this->view('Profiler','Application/View/Profiler/Profile/Navigation.php'); ?>
 
 	<div class="content">
 		<h2>Dexter</h2>
