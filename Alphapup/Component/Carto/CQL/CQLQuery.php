@@ -45,7 +45,7 @@ class CQLQuery
 		$translator = new Translator($this->_carto,$this,$parseResult,$strategy);
 		
 		$this->_statement = $parseResult->stmt()->translate($translator);
-
+		
 		return $this->_statement;
 	}
 	
@@ -62,9 +62,9 @@ class CQLQuery
 	public function results()
 	{
 		$statement = $this->execute();
-		$rows = $this->_carto->dexter()->query($statement,$this->_params)->results();
+		$rows = $this->_carto->dexter()->execute($statement,$this->_params)->results();
 		
-		return $this->_hydrator->hydrateAll($rows,$this->resultMapping());
+		$this->_hydrator->hydrateAll($rows,$this->resultMapping());
 	}
 	
 	public function statement()

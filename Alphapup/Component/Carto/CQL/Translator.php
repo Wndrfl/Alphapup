@@ -81,14 +81,27 @@ class Translator
 		
 		// ONE TO ONE ASSOCIATION
 		if($assocAnnot['type'] == Mapping::ONE_TO_ONE || $assocAnnot['type'] == Mapping::ONE_TO_MANY) {
-
-			// if one to one, the root entity will have a
-			// local property that maps to a foreign property
-			// (in the associated entity)
-			$assocProperty = $assocAnnot['foreign'];
+			
+			if($assocAnnot['isOwningSide']) {
+			
+				// if one to one, the root entity will have a
+				// local property that maps to a foreign property
+				// (in the associated entity)
+				$assocProperty = $assocAnnot['foreign'];
 		
-			$part .= ' '.$mapping->tableName().' '.$tableAlias;
-			$part .= ' ON '.$parentTableAlias.'.'.$parentMapping->columnName($assocAnnot['local']).' = '.$tableAlias.'.'.$mapping->columnName($assocProperty);
+				$part .= ' '.$mapping->tableName().' '.$tableAlias;
+				$part .= ' ON '.$parentTableAlias.'.'.$parentMapping->columnName($assocAnnot['local']).' = '.$tableAlias.'.'.$mapping->columnName($assocProperty);
+			
+			}else{
+				
+				if(!$parentAssocAnnot = $mapping->associationFor($parentMapping->entityName())) {
+					// DO EXCEPTION
+					return false;
+				}
+				
+				$part .= ' '.$mapping->tableName().' '.$tableAlias;
+				$part .= ' ON '.$parentTableAlias.'.'.$parentAssocAnnot['foreign'].' = '.$tableAlias.'.'.$parentAssocAnnot['local'];
+			}
 		
 		}elseif($assocAnnot['type'] == Mapping::MANY_TO_MANY) {
 
@@ -118,7 +131,7 @@ class Translator
 			$part .= ' ON '.$tableAlias.'.'.$mapping->columnName($foreignAssocAnnot['local']).' = '.$middleTableAlias.'.'.$foreignAssocAnnot['joinColumn'];
 		}
 		
-		$this->_resultMapping->mapJoin($parentTableAlias,$mapping->entityName(),$tableAlias,$assocAnnot['property']);
+		$this->_resultMapping->mapJoin($parentTableAlias,$mapping->entityName(),$tableAlias,$assocAnnot['propertyName']);
 		
 		return $part;
 	}

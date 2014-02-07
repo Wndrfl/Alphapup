@@ -25,6 +25,7 @@ class Index extends Controller
 		
 		$accounts = $this->get('account_repository');
 		$accounts->test();
+		die('success');
 		
 		$view->title('ALPHAPUP SAYS RELAX');
 		$view->theme('LoremIpsum','Application/Theme/Default');

@@ -68,7 +68,8 @@ class AccountRepository
 	public function test()
 	{
 		$cql = 'FETCH a, au FROM Account a ASSOCIATED a._accountUser au OPTIONAL ASSOCIATED a._comments c WHERE a._id = 1 AND c._id = 1 LIMIT 10';
-		$this->_carto->cql($cql)->execute();
+		$this->_carto->cql($cql)->results();
+		
 		 return;
 		
 		$cql = $this->_carto->cqlBuilder();
