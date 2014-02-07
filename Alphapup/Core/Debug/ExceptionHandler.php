@@ -102,13 +102,13 @@ EOF;
 		try {
 			$view = $this->_container->get('view');
 			$view->title($title);
-			$view->theme('Alphapup','Application/Theme/Error');
+			$view->theme('Alphapup','Core/Debug/Theme/Error');
 			
 			if($this->_debug) {
 				$view->exception = $e;
-				$view->addView('Alphapup','Application/View/Error/Exception.php');
+				$view->addView('Alphapup','Core/Debug/Views/Exception.php');
 			}else{
-				$view->addView('Alphapup','Application/View/Error/GeneralError.php');
+				$view->addView('Alphapup','Core/Debug/Views/GeneralError.php');
 			}
 			$response->append($view->render());
 		}catch(\Exception $e) {

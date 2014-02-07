@@ -13,7 +13,7 @@ class Profile extends Controller
 		$profile = $profiler->getProfile($id);
 		$view->profile = $profile;
 		
-		$view->theme('Alphapup','Application/Theme/Debug');
+		$view->theme('Alphapup','Application/Theme/Default');
 		$view->addView('Alphapup','Application/View/Profiler/Profile/Index.php');
 		$view->display();
 	}
@@ -26,7 +26,7 @@ class Profile extends Controller
 		$profile = $profiler->getProfile($id);
 		$view->profile = $profile;
 		
-		$view->theme('Alphapup','Application/Theme/Debug');
+		$view->theme('Alphapup','Application/Theme/Default');
 		$view->addView('Alphapup','Application/View/Profiler/Profile/Config.php');
 		$view->display();
 	}
@@ -47,7 +47,7 @@ class Profile extends Controller
 		$view->totalQueryTime = $totalQueryTime;
 		
 		$view->profile = $profile;
-		$view->theme('Alphapup','Application/Theme/Debug');
+		$view->theme('Alphapup','Application/Theme/Default');
 		$view->addView('Alphapup','Application/View/Profiler/Profile/Dexter.php');
 		$view->display();
 	}
@@ -60,7 +60,7 @@ class Profile extends Controller
 		$profile = $profiler->getProfile($id);
 		$view->profile = $profile;
 		
-		$view->theme('Alphapup','Application/Theme/Debug');
+		$view->theme('Alphapup','Application/Theme/Default');
 		$view->addView('Alphapup','Application/View/Profiler/Profile/Events.php');
 		$view->display();
 	}

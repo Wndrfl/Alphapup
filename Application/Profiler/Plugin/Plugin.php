@@ -24,7 +24,7 @@ class Plugin implements PluginInterface
 		 * everything following the body tag
 		 */
 		$matches = preg_split('/(<\/body.*?>)/i', $event->response()->content(), -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-		$html = $matches[0] . $matches[1] . $toolbarResponse->content() . $matches[2];
+		$html = $matches[0] . $toolbarResponse->content() . $matches[1] . $matches[2];
 		
 		$event->response()->setContent($html);
 	}

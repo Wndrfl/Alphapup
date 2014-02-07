@@ -7,12 +7,6 @@ $config['routes'] = array(
 		'action' => 'index'
 	),
 	
-	'alphapup.profiler' => array(
-		'pattern' => 'profiler/style.css',
-		'controller' => 'Profiler\\Application\\Controller\\Profiler',
-		'action' => 'style'
-	),
-	
 	'alphapup.profiler.profile' => array(
 		'pattern' => 'profiler/profile/{id}',
 		'controller' => 'Profiler\\Application\\Controller\\Profile',

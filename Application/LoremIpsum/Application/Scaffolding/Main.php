@@ -20,7 +20,7 @@ if(isset($meta['content'])) { echo ' content="'.$this->escape($meta['content']).
 </script>
 <?php } ?>
 </head> 
-<body> 
+<body>
 <?php echo $this->body(); ?>
 <?php foreach($this->scripts('bottom') as $script) { ?>
 <script type='text/javascript' src='<?php echo $script; ?>'></script>

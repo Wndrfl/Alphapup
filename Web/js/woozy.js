@@ -13,7 +13,7 @@ $('document').ready(function() {
 			},speed);
 		}
 	}
-	
+
 	setInterval(function() {
 		wooz('h1',15,200);
 	},200);

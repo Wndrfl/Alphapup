@@ -1,7 +1,7 @@
 <?php
 $config = array(
 	'css' => array(
-		'/css/loremipsum.main.css'
+		'/css/welcome.css'
 	),
 	'scaffolding' => array(
 		'plugin' => 'LoremIpsum',

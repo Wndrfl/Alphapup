@@ -91,8 +91,10 @@ class Dispatcher
 	{
 		$c = $request->getControllerName();
 		$c = (!empty($c) && $c) ? $c : $this->defaultController();
+		$request->setControllerName($c);
 		$a = $request->getActionName();
 		$a = (!empty($a) && $a) ? $a : $this->defaultAction();
+		$request->setActionName($a);
 		$p = $request->getParams();
 		
 		$this->dispatch($c,$a,$p,$response);

@@ -15,7 +15,6 @@ class Toolbar extends Controller
 		if(!$profile) {
 			return;
 		}
-		
 		$view->profileId = $profile->id();
 		
 		// BASIC INFO

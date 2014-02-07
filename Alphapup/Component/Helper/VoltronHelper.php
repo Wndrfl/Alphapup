@@ -8,7 +8,7 @@ class VoltronHelper extends BaseHelper
 {
 	private function _renderType($type,VoltronView $voltron)
 	{
-		$view = $this->view()->view('Alphapup','Application/View/Voltron/'.ucfirst($type).'Template.php',null,$voltron->attributes());
+		$view = $this->view()->view('Alphapup','Component/Voltron/Views/'.ucfirst($type).'Template.php',null,$voltron->attributes());
 		return $view;
 	}
 	

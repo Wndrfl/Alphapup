@@ -32,8 +32,7 @@ class Router
 	{	
 		$uri = explode('?',$request->getUrl('uri'));
 		$uri = $uri[0];
-		//$check = ltrim($uri,'/');
-		$check = $uri;
+		$check = ltrim($uri,'/');
 		
 		// no uri
 		if($check == '') {
