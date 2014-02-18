@@ -25,7 +25,7 @@ class Index extends Controller
 		$accounts = $fetch->fetch('accountuser');
 		
 		foreach($accounts as $account) {
-			echo $account->displayName();
+			echo $account->account()->email();
 		}
 		
 		$view->title('ALPHAPUP SAYS RELAX');

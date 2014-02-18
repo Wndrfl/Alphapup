@@ -14,6 +14,7 @@ use Alphapup\Component\Fetch\ResultMapper;
 class Hydrator
 {
 	private
+		$_childrenEntities = array(),
 		$_entities = array(),
 		$_fetch,
 		$_publicLibrary,
@@ -218,6 +219,9 @@ class Hydrator
 			// Loop thru all rootEntities with this alias
 			foreach($this->_entities[$rootEntityAlias] as $rootEntityUID => $rootEntity) {
 				
+				if(!isset($this->_childrenEntities[$rootEntityAlias]))
+					continue;
+					
 				// Find all the children for this rootEntity
 				foreach($this->_childrenEntities[$rootEntityAlias][$rootEntityUID] as $propertyName => $details) {
 

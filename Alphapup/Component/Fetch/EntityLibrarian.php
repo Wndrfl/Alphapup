@@ -133,7 +133,7 @@ class EntityLibrarian
 				
 				// one to one join
 				// gather all foreign entity things
-				if(isset($assoc['entity'])) {
+				if(isset($assoc['entity']) && !$assoc['lazy']) {
 					
 					// get the mapping, etc for this entity
 					$foreignClassName = $this->_fetch->className($assoc['entity']);
