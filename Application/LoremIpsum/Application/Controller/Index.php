@@ -22,11 +22,10 @@ class Index extends Controller
 		$view = $this->get('view');
 		
 		$fetch = $this->get('fetch');
-		$accounts = $fetch->fetch('account');
+		$accounts = $fetch->fetch('accountuser');
 		
 		foreach($accounts as $account) {
-			echo $account->email();
-			echo '<br />';
+			echo $account->displayName();
 		}
 		
 		$view->title('ALPHAPUP SAYS RELAX');

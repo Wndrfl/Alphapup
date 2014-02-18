@@ -16,10 +16,17 @@ use Alphapup\Component\Introspect\Introspector\ClassIntrospector;
  */
 class EntityMapper
 {
+	const
+		ONE_TO_ONE = 1,
+		MANY_TO_ONE = 2,
+		ONE_TO_MANY = 4,
+		MANY_TO_MANY = 8;
+		
 	private
 		$_annotationPrefix = 'Carto\\';
 		
 	private
+		$_associations = array(),
 		$_classIntrospector,
 		$_classProperties = array(),
 		$ids = array();
@@ -33,6 +40,60 @@ class EntityMapper
 	private function _annotationName($name)
 	{
 		return $this->_annotationPrefix.$name;
+	}
+	
+	private function _associationDetails($propertyInspector,array $annot=array())
+	{
+		$assocDetails = array();
+		
+		// mandatory
+		if(!isset($annot['entity']))
+			throw new \Exception();
+			
+		// set property name
+		$assocDetails['propertyName'] = $propertyInspector->name();
+		$assocDetails['entity'] = ltrim($annot['entity'],'\\');
+		$assocDetails['mappedBy'] =  (isset($annot['mappedBy'])) ? $annot['mappedBy'] : null;
+		$assocDetails['inversedBy'] = (isset($annot['inversedBy'])) ? $annot['inversedBy'] : null;
+		$assocDetails['lazy'] = (isset($annot['lazy'])) ? (bool)$annot['lazy'] : false;
+		$assocDetails['ttl'] = (isset($annot['ttl'])) ? intval($annot['ttl']) : 0;
+		
+		return $assocDetails;
+	}
+	
+	private function _oneToOneAssociationDetails($propertyInspector,array $annot=array())
+	{
+		// grab common association details
+		$assocDetails = $this->_associationDetails($propertyInspector,$annot);
+		
+		$assocDetails['type'] = self::ONE_TO_ONE;
+		
+		// set local / foreign params
+		$assocDetails['local'] = (isset($annot['local'])) ? $annot['local'] : null;
+		$assocDetails['foreign'] = (isset($annot['foreign'])) ? $annot['foreign'] : null;
+		
+		// determine if owning side
+		$assocDetails['isOwningSide'] = false;
+		if(isset($annot['local'])) {
+			$assocDetails['isOwningSide'] = true;
+		}
+		
+		
+		if($assocDetails['isOwningSide']) {
+			
+			// if no local supplied, default to the
+			// name of the other entity and append "_id"
+			if(is_null($assocDetails['local'])) {
+				$assocDetails['local'] = lcfirst($assocDetails['entity']).'_id';
+			}
+			
+			// if no foreign supplied default to "id"
+			if(is_null($assocDetails['foreign'])) {
+				$assocDetails['foreign'] = 'id';
+			}
+		}
+		
+		return $assocDetails;
 	}
 	
 	private function _propertyDetails($propertyInspector,$annot)
@@ -57,6 +118,20 @@ class EntityMapper
 		}
 		
 		return $propertyDetails;
+	}
+	
+	public function associations()
+	{
+		return $this->_associations;
+	}
+	
+	public function associationForProperty($propertyName)
+	{
+		foreach($this->_associations as $assoc) {
+			if($assoc['propertyName'] == $propertyName)
+				return $assoc;
+		}
+		return false;
 	}
 	
 	public function classProperties()
@@ -89,6 +164,17 @@ class EntityMapper
 		return $this->_classIntrospector->name();
 	}
 	
+	public function findAssociationsInfoForClassName($className)
+	{
+		$assocs = array();
+		foreach($this->associations() as $association) {
+			if($association['entity'] == $className) {
+				$assocs[] = $association;
+			}
+		}
+		return $assocs;
+	}
+	
 	public function idColumns()
 	{
 		return $this->_ids;
@@ -99,9 +185,25 @@ class EntityMapper
 		return array_keys($this->_ids);
 	}
 	
+	public function propertyNameForColumn($columnName)
+	{
+		foreach($this->_classProperties as $property) {
+			if($property['columnName'] == $columnName)
+				return $property['propertyName'];
+		}
+		return null;
+	}
+	
 	public function propertyNames()
 	{
 		return array_keys($this->_classProperties);
+	}
+	
+	public function propertyValue($entity,$propertyName)
+	{
+		echo $this->entityName();
+		var_dump($this->_classIntrospector->property($propertyName));
+		return $this->_classIntrospector->property($propertyName)->value($entity);
 	}
 	
 	public function setPropertyValue($entity,$propertyName,$value)
@@ -123,6 +225,8 @@ class EntityMapper
 				
 			// If property is ONE_TO_ONE
 			}elseif($annot = $propertyInspector->annotation($this->_annotationName('OneToOne'))) {
+				$assocDetails = $this->_oneToOneAssociationDetails($propertyInspector,$annot);
+				$this->_associations[$assocDetails['propertyName']] = $assocDetails;
 				
 			// If property is ONE_TO_MANY
 			}elseif($annot = $propertyInspector->annotation($this->_annotationName('OneToMany'))) {

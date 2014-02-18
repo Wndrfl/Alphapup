@@ -22,11 +22,11 @@ class ExprBuilder
 		}
 	}
 	
-	public function column($tableName,$name)
+	public function column($tableName,$name,$alias=null)
 	{	
 		$table = $this->table($tableName);
 		
-		return new Expr\Column($table,$name);
+		return new Expr\Column($table,$name,$alias);
 	}
 	
 	public function count($tableName=null,$name,$alias=null)

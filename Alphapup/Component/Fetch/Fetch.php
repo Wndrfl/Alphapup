@@ -25,6 +25,7 @@ class Fetch
 	
 	function className($entityAlias)
 	{
+		$entityAlias = strtolower($entityAlias);
 		return (isset($this->_entityAliases[$entityAlias]))
 			? $this->_entityAliases[$entityAlias] : null;
 	}
@@ -49,7 +50,7 @@ class Fetch
 			
 		// Create the EntityLibrarian
 		$entityMapper = $this->entityMapper($entityAlias);
-		$entityLibrarian = new EntityLibrarian($entityMapper,$this->_dexter,$this->_publicLibrary);
+		$entityLibrarian = new EntityLibrarian($this,$entityMapper,$this->_dexter,$this->_publicLibrary);
 		
 		$this->_entityLibrarians[$entityAlias] = $entityLibrarian;
 		return $this->_entityLibrarians[$entityAlias];
