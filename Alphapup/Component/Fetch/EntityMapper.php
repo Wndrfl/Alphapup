@@ -175,6 +175,11 @@ class EntityMapper
 		return $assocs;
 	}
 	
+	public function hasMethod($method)
+	{
+		return $this->_classIntrospector->hasMethod($method);
+	}
+	
 	public function idColumns()
 	{
 		return $this->_ids;
@@ -183,6 +188,11 @@ class EntityMapper
 	public function idProperties()
 	{
 		return array_keys($this->_ids);
+	}
+	
+	public function methods()
+	{
+		return $this->_classIntrospector->methods();
 	}
 	
 	public function propertyNameForColumn($columnName)
@@ -201,8 +211,6 @@ class EntityMapper
 	
 	public function propertyValue($entity,$propertyName)
 	{
-		echo $this->entityName();
-		var_dump($this->_classIntrospector->property($propertyName));
 		return $this->_classIntrospector->property($propertyName)->value($entity);
 	}
 	

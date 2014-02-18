@@ -3,6 +3,7 @@ namespace Alphapup\Component\Fetch;
 
 use Alphapup\Component\Fetch\EntityMapper;
 use Alphapup\Component\Fetch\Fetch;
+use Alphapup\Component\Fetch\Proxy\OneToOneProxyFactory;
 use Alphapup\Component\Fetch\PublicLibrary;
 use Alphapup\Component\Fetch\ResultMapper;
 
@@ -30,7 +31,7 @@ class Hydrator
 		$this->_resultMapper = $resultMapper;
 	}
 	
-	private function _hydrateEntity($values=array(),$entityMapper)
+	private function _hydrateEntity($values=array(),$entityMapper,$fillEntity=null)
 	{
 		// get the ids of this entity
 		$ids = array();
@@ -41,7 +42,7 @@ class Hydrator
 
 		// either use an existing copy of this Entity,
 		// or start from scratch
-		$entity = $this->_publicLibrary->getOrCreateEntity($entityMapper,$ids);
+		$entity = ($fillEntity) ? $fillEntity : $this->_publicLibrary->getOrCreateEntity($entityMapper,$ids);
 
 		// loop thru properties and hydrate w/ values
 		foreach($entityMapper->propertyNames() as $propertyName) {
@@ -107,13 +108,9 @@ class Hydrator
 		$results = $this->organizeEntities();
 		
 		return $results;
-		// DO CHILD ENTITY STUFF
-		die('need to organize child entities into parent entities');
-		
-		return $this->_rootEntities;
 	}
 	
-	public function hydrateRow(array $row=array())
+	public function hydrateRow(array $row=array(),$rootEntityToFill=null)
 	{
 		$rowData = $this->formatRowData($row);
 		
@@ -167,13 +164,6 @@ class Hydrator
 					}
 				
 					// record entity as a child for its parent
-					//$this->_childrenEntities[$parentEntityAlias][$parentLocalId][$entityAlias][$entityUID] = $entityUID;
-					if(!isset($this->_childrenEntities[$parentEntityAlias][$parentEntityUID][$assoc['propertyName']])) {
-						$this->_childrenEntities[$parentEntityAlias][$parentEntityUID][$assoc['propertyName']] = array(
-							'type' => $assoc['type'],
-							'values' => array()
-						);
-					}
 					$this->_childrenEntities[$parentEntityAlias][$parentEntityUID][$assoc['propertyName']]['values'][] = array(
 						'entityAlias' => $entityAlias,
 						'entityUID' => $entityUID,
@@ -184,8 +174,14 @@ class Hydrator
 			// if this entity is a ROOT ENTITY	
 			}else{
 				
+				// where we given a rootEntityToFill?
+				$fillEntity = null;
+				if($rootEntityToFill) {
+					$fillEntity = $rootEntityToFill;
+				}
+				
 				// inject values into the entity
-				$entity = $this->_hydrateEntity($values,$entityMapper);
+				$entity = $this->_hydrateEntity($values,$entityMapper,$fillEntity);
 
 				// add to entities
 				$this->_entities[$entityAlias][$entityUID] = $entity;
@@ -198,6 +194,32 @@ class Hydrator
 				
 				// record the UID for this tableAlias
 				$this->_tableAliasUIDs[$tableAlias] = $entityUID;
+				
+				foreach($entityMapper->associations() as $assoc) {
+					if(!isset($this->_childrenEntities[$entityAlias][$entityUID][$assoc['propertyName']])) {
+						
+						$details = array(
+							'entityAlias' => $assoc['entity'],
+							'type' => $assoc['type'],
+							'lazy' => $assoc['lazy'],
+							'local' => $assoc['local'],
+							'values' => array()
+						);
+						
+						$foreignEntityMapper = $this->_fetch->entityMapper($assoc['entity']);
+						if($assoc['isOwningSide']) {
+							$foreignPropertyName = $foreignEntityMapper->propertyNameForColumn($assoc['foreign']);
+							$details['foreignPropertyName'] = $foreignPropertyName;
+							$details['foreignValue'] = $values[$assoc['local']]; // what the foreign value should be
+						}else{
+							$foreignAssoc = $foreignEntityMapper->associationForProperty($assoc['mappedBy']);
+							$details['foreignPropertyName'] = $foreignEntityMapper->propertyNameForColumn($foreignAssoc['local']);
+							$details['foreignValue'] = $values[$entityMapper->propertyNameForColumn($foreignAssoc['foreign'])];
+						}
+						
+						$this->_childrenEntities[$entityAlias][$entityUID][$assoc['propertyName']] = $details;
+					}
+				}
 			}
 			
 		}
@@ -219,33 +241,51 @@ class Hydrator
 			// Loop thru all rootEntities with this alias
 			foreach($this->_entities[$rootEntityAlias] as $rootEntityUID => $rootEntity) {
 				
-				if(!isset($this->_childrenEntities[$rootEntityAlias]))
-					continue;
-					
-				// Find all the children for this rootEntity
-				foreach($this->_childrenEntities[$rootEntityAlias][$rootEntityUID] as $propertyName => $details) {
-
-					// If it's to one, just map it directly
-					if($details['type'] == EntityMapper::ONE_TO_ONE || $details['type'] == EntityMapper::ONE_TO_MANY) {
-						
-						$childEntity = $this->_entities[$details['values'][0]['entityAlias']][$details['values'][0]['entityUID']];
-						$rootEntityMapper->setPropertyValue($rootEntity,$propertyName,$childEntity);
-						
-					}else{
-						
-						$collection = array();
-						
-						foreach($details['values'] as $value) {
-							$childEntity = $this->_entities[$value['entityAlias']][$value['entityUID']];
-							$collection[] = $childEntity;
-						}
-						
-						$rootEntityMapper->setPropertyValue($rootEntity,$propertyName,$collection);
-						
-					}
-					
-				}
+				// Go through all associations and fill the ones that were not
+				// fulfilled w/ proxies
+				$rootAssociations = $rootEntityMapper->associations();
+				foreach($rootAssociations as $assoc) {
 				
+					// Find all the children for this rootEntity
+					foreach($this->_childrenEntities[$rootEntityAlias][$rootEntityUID] as $propertyName => $details) {
+
+						// If it's to one, just map it directly
+						if($details['type'] == EntityMapper::ONE_TO_ONE || $details['type'] == EntityMapper::ONE_TO_MANY) {
+
+							// if NOT LAZY
+							if(!$details['lazy']) {
+								
+								if($details['values']) {
+									$childEntity = $this->_entities[$details['values'][0]['entityAlias']][$details['values'][0]['entityUID']];
+									$rootEntityMapper->setPropertyValue($rootEntity,$propertyName,$childEntity);
+								}
+							
+							// if LAZY
+							}else{
+								var_dump(array($details['foreignPropertyName'] => $details['foreignValue']));
+								$proxy = $this->_fetch->oneToOneProxyFactory()->proxy($details['entityAlias'],array($details['foreignPropertyName'] => $details['foreignValue']));
+								$rootEntityMapper->setPropertyValue($rootEntity,$propertyName,$proxy);
+								
+							}
+
+						// If it's supposed to be a collection	
+						}else{
+
+							$collection = array();
+
+							foreach($details['values'] as $value) {
+								$childEntity = $this->_entities[$value['entityAlias']][$value['entityUID']];
+								$collection[] = $childEntity;
+							}
+
+							$rootEntityMapper->setPropertyValue($rootEntity,$propertyName,$collection);
+
+						}
+
+					}
+				
+				}
+
 				$results[] = $rootEntity;
 				
 			}

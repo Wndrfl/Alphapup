@@ -12,6 +12,11 @@ class AccountUser
 	private $_account;
 	
 	/**
+	 * @Carto\Column (name=account_id)
+	 */
+	private $_accountId;
+	
+	/**
 	 * @Carto\Id
 	 * @Carto\Column (name="id")
 	 */

@@ -4,6 +4,7 @@ namespace Alphapup\Component\Fetch;
 use Alphapup\Component\Dexter\Dexter;
 use Alphapup\Component\Fetch\EntityLibrarian;
 use Alphapup\Component\Fetch\EntityMapper;
+use Alphapup\Component\Fetch\Proxy\OneToOneProxyFactory;
 use Alphapup\Component\Fetch\PublicLibrary;
 use Alphapup\Component\Introspect\Introspect;
 
@@ -13,14 +14,16 @@ class Fetch
 		$_entityAliases,
 		$_entityLibrarians = array(),
 		$_introspect,
+		$_proxyFactory,
 		$_publicLibrary;
 		
-	public function __construct(array $entityAliases=array(),Introspect $introspect,Dexter $dexter)
+	public function __construct(array $entityAliases=array(),Introspect $introspect,Dexter $dexter,$proxyDir,$proxyNamespace)
 	{
 		$this->_entityAliases = $entityAliases;
 		$this->_introspect = $introspect;
 		$this->_dexter = $dexter;
 		$this->_publicLibrary = new PublicLibrary();
+		$this->_oneToOneProxyFactory = new OneToOneProxyFactory($this,$proxyDir,$proxyNamespace);
 	}
 	
 	function className($entityAlias)
@@ -67,7 +70,7 @@ class Fetch
 		return $this->_entityMappers[$entityAlias];
 	}
 	
-	function fetch($entityAlias,$args=array())
+	public function fetch($entityAlias,$args=array())
 	{
 		try {
 			$entityLibrarian = $this->entityLibrarian($entityAlias);
@@ -77,5 +80,10 @@ class Fetch
 			// Bad things.
 			echo $e;
 		}
+	}
+	
+	public function oneToOneProxyFactory()
+	{
+		return $this->_oneToOneProxyFactory;
 	}
 }

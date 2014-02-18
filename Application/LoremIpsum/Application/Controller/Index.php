@@ -28,6 +28,9 @@ class Index extends Controller
 			echo $account->account()->email();
 		}
 		
+		die('Need to set up USE ENTITY to hydrate previously existing entities, like proxies');
+		die('Owning entities like AccountUser must currently have a property that corresponds to the local assoc paramater. it might be smarter to make the local paramter be a property name instead of a column name.');
+		
 		$view->title('ALPHAPUP SAYS RELAX');
 		$view->theme('LoremIpsum','Application/Theme/Default');
 		$view->addView('LoremIpsum','Application/View/Index/Carto.php');
